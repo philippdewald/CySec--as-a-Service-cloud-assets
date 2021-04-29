@@ -1,0 +1,2 @@
+- Which kind of cloud services do exist? (SaaS, PaaS, IaaS)
+- Read about cloud infrastructures, which does exist? Which are the biggest? Which are most often used in companies?
