@@ -24,12 +24,12 @@
 
 %edit header and footer
 \fancypagestyle{firstpage}{
-  \lhead{*-as-a-Service cloud assets}
+  \lhead{X-as-a-Service cloud assets}
   \chead{\textbf{\Large Learnings}}
   \rhead{CySec Project '21}
 }
 \lhead{}
-\rhead{*-as-a-Service cloud assets}
+\rhead{X-as-a-Service cloud assets}
 
 \cfoot{}
 \rfoot{\small\thepage}
@@ -58,7 +58,8 @@
 \begin{center}
     \url{www.redhat.com/de/topics/cloud-computing/what-is-iaas}
 \end{center}
-"Most businesses use a combination of SaaS and IaaS cloud computing service models."
+"Most businesses use a combination of SaaS and IaaS cloud computing service models." \\
+Also services like Security-as-a-Service (SaaS), Firewall-as-a-Service (FWaaS) or Software Infrastructure-as-a-Service (SIaaS) exist.
 
 \section*{Cloud Providers} 
 \textbf{Biggest Players} \hspace{11cm} \href{https://www.zdnet.com/article/the-top-cloud-providers-of-2021-aws-microsoft-azure-google-cloud-hybrid-saas/}{\textit{Source}}
@@ -74,20 +75,22 @@
 \begin{itemize}
     \item Salesforce (leading in SaaS)
     \item Oracle Cloud
-    \item SAP Business Technology Platform (SAP BTP)
+    \item SAP Business Technology Platform (SAP BTP) \\
+    (at least SAP HANA cloud is AWS)
     \item ServiceNow
     \item Microsoft Office 365
     \item OpenStack
     \item Kamatera
+    \item Adobe (at least partially AWS!)
 \end{itemize}
 
-\section*{How to identify used Cloud Services}
-\textbf{ToDo}
 
 \newpage
 \section*{Misc}
 \begin{itemize}
-    \item 
+    \item Cloud-Enabler: primarily IT firms that develop hardware, software, storage, networking and other related products, serving as a cloud environment component.
+    \item Cloud-Service-Provicer (CSP): vendors which provide Information Technology (IT) as a service over the Internet.
+    \item Identify where a server is located: \url{https://research.domaintools.com/}
 \end{itemize}
 Everything that could be interesting in the future... 
 \begin{itemize}
@@ -98,6 +101,62 @@ Everything that could be interesting in the future...
     \item Azure offers \href{https://azure.microsoft.com/en-us/services/expressroute/}{\textit{ExpressRoute}}
     \item OpenStack offers \href{https://www.openstack.org/passport/}{\textit{OpenStack Public Cloud Passport}}
 \end{itemize}
+\end{itemize}
+
+
+\subsection*{Researching \& ideas}
+\begin{itemize}
+    \item googleapi in content security policy $\rightarrow$ using google cloud services? \\
+    $\Rightarrow$ No, googleapis aren't cloud services!
+    
+    How about learning something out of the CSP?
+    
+    \item DNS entries? DNS Resolver from AWS? or CloudFront servers? Amazon Route 53 (DNS Management Service)?
+    
+    \item Fiddler, Wireshark, analyzing traffic?
+    
+    \item included scripts?
+\end{itemize}
+
+
+\newpage
+\subsection*{Understanding AWS}
+\begin{itemize}
+    \item Identify if website uses AWS:
+    
+    "Amazon has 26 different web services. You can tell if the web server you are communicating with is hosted by Amazon EC2 by its IP address. You can't tell if there are EC2 instances behind a proxy you're talking to, though.
+
+    You can tell if the domain name is resolved by an Amazon Route 53 DNS server.
+
+    Besides that, you wouldn't really know what other services are being used unless they choose to make it obvious."
+    
+    \item EC2:
+    
+    Elastic Compute Cloud, IaaS (and SaaS); provides scalable computing capacity in the Amazon Web Services (AWS) Cloud
+    
+    \item S3:
+    
+    Simple Storage Service; really good for static websites (html, css, js) but doesn't support server-side scripting languages (php,...)
+    
+    You can easily host a website via S3 bucket options. If you want your own domain name you have to register it and use Route 53: on resolution there are awsdns entries (e.g. ns-183.awsdns-22.com. / s3-website)
+    
+\end{itemize}
+
+\subsection*{Understanding Azure}
+
+
+
+
+\newpage
+\section*{How to identify used Cloud Services}
+\begin{itemize}
+    \item For (some?) AWS services:
+    
+    \verb|dig @8.8.8.8 +trace website.com|
+    
+    When inspecting the trace there can be found different AWS nameserver, indicating that the website is set up / uses AWS services.
+    
+    Attention: e.g. SAP uses AWS services, however resolving their DNS entry does not show it. This is because their webpage doesn't use AWS services directly.
 \end{itemize}
 
 \end{document}
