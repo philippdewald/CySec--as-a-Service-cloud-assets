@@ -1,3 +1,4 @@
-- identify if website uses ec2
-- when does dnslookup identify AWS service?
-	how to extend that
+This Week's Goals:
+- dig deep into AWS
+- checkout Azure, Cloudflare
+- DNS entries and other possiblities to identify
