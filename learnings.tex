@@ -116,6 +116,12 @@ Everything that could be interesting in the future...
     \item Fiddler, Wireshark, analyzing traffic?
     
     \item included scripts?
+    
+    \item response headers?
+    
+    \item certificates?
+    
+    \item cookies? (probably not)
 \end{itemize}
 
 
@@ -140,6 +146,8 @@ Everything that could be interesting in the future...
     
     You can easily host a website via S3 bucket options. If you want your own domain name you have to register it and use Route 53: on resolution there are awsdns entries (e.g. ns-183.awsdns-22.com. / s3-website)
     
+    \item AWS Certificate Manager (ACM) is a private CA service.
+    
 \end{itemize}
 
 \subsection*{Understanding Azure}
@@ -150,13 +158,40 @@ Everything that could be interesting in the future...
 \newpage
 \section*{How to identify used Cloud Services}
 \begin{itemize}
-    \item For (some?) AWS services:
+    \item \textbf{DNS Entries}
+    
+    For (some?) cloudAWS services:
     
     \verb|dig @8.8.8.8 +trace website.com|
     
-    When inspecting the trace there can be found different AWS nameserver, indicating that the website is set up / uses AWS services.
+    When inspecting the trace there can be found different cloudAWS nameserver, indicating that the website is set up / uses the listed cloudAWS services. \\
+    \textit{So far: AWS ("awsdns"), Azure ("azure-dns"), Google cloud ("ns-cloud-c2.googledomains.com", Cloudflare ("ns.cloudflare")}
     
     Attention: e.g. SAP uses AWS services, however resolving their DNS entry does not show it. This is because their webpage doesn't use AWS services directly.
+    
+    
+    \item \textbf{Certificates}
+    
+    AWS: 
+    
+    has own "Certificate Managers" (ACM) ("Amazon Root CA 1", "Amazon", "aws.amazon.com") the later partially issuing websites hosted on AWS
+    
+    Google: 
+    
+    has own Certificate Authority called "Certificate Authority Service" 
+    
+    Cloudflare: 
+    
+    own CA e.g. \verb|Cloudflare Inc ECC CA-3| issuing coinbase.com
+    
+    \item \textbf{JavaScript}
+    
+    By inspecting \verb|view-source|, JavaScript from used cloudproviders can be found
+    \begin{itemize}
+        \item AWS: \verb|aws.amazon.com|, \verb|s3.amazonaws.com|
+        \item Cloudflare:
+        \verb|cdnjs.cloudflare.com| \textit{unsure: some say cdn is cloud service, others say not}
+    \end{itemize}
 \end{itemize}
 
 \end{document}
