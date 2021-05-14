@@ -159,7 +159,14 @@ Services in more than 600 services. Besides typical IaaS, SaaS and PaaS also Blo
     \item Azure Compute Services (VMs, Container Service,...)
     \item Azure Network Services (CDN, DNS,...)
 \end{itemize}
-To privately connect to Azure, Expressroute is being used (AWS: Direct Connect) connections that don't go over the public internet
+To privately connect to Azure, Expressroute is being used (AWS: Direct Connect) connections that don't go over the public internet \\ \\
+\textbf{Identify office365:} \\
+If access to email sent from those domains, headers will contain wealth of information (\verb|Received-header, X-header|). Also \verb|MX-record|:
+\begin{verbatim}
+nslookup
+set q=MX
+ais-security.de
+\end{verbatim}
 
 
 
