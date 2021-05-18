@@ -1,4 +1,6 @@
-This Week's Goals:
-- dig deep into AWS
-- checkout Azure, Cloudflare
-- DNS entries and other possiblities to identify
+- included scripts: only cdn?
+- Expressroute and DirectConnect
+- category for dead ends
+- new "hidden" ways of identifing services
+- check out GrayhatWarfare
+- checking out "smaller" services (salesforce, Dropbox, ...)
