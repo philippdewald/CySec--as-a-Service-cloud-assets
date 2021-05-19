@@ -121,7 +121,9 @@ Everything that could be interesting in the future...
     
     \item certificates?
     
-    \item cookies? (probably not)
+    \item cookies? (probably not?)
+    
+    \item IP addresses?
 \end{itemize}
 
 
@@ -146,44 +148,55 @@ Everything that could be interesting in the future...
     
     You can easily host a website via S3 bucket options. If you want your own domain name you have to register it and use Route 53: on resolution there are awsdns entries (e.g. ns-183.awsdns-22.com. / s3-website)
     
-    \item AWS Certificate Manager (ACM) is a private CA service.
+    \item AWS Certificate Manager is a private CA service.
+    
+    \item AWS Direct Connect \\
+    "If you want a setup without using the internet at all, that's when you look at AWS Direct Connect" 
+    
+    Internal network is linked to an AWS Direct Connect location over Ethernet (one end on personal router, the other one to an AWS Direct Connect router). ISPs are bypassed
+    
+    
     
 \end{itemize}
 
-\subsection*{Understanding Azure}
+\subsection*{Understanding Azure / Office365}
 Services in more than 600 services. Besides typical IaaS, SaaS and PaaS also Blockchain Workbench, CDN, IoT,... They are categorized into 5 core services:
 \begin{itemize}
-    \item Azure Application Services (AI, Analytics, IoT, ...)
-    \item Azure Data Services (Storage, SQL DB, Cache,...)
-    \item Azure Development Services (Development tools, ...)
-    \item Azure Compute Services (VMs, Container Service,...)
-    \item Azure Network Services (CDN, DNS,...)
+    \item Application Services (AI, Analytics, IoT, ...)
+    \item Data Services (Storage, SQL DB, Cache,...)
+    \item Development Services (Development tools, ...)
+    \item Compute Services (VMs, Container Service,...)
+    \item Network Services (CDN, DNS,...)
 \end{itemize}
-To privately connect to Azure, Expressroute is being used (AWS: Direct Connect) connections that don't go over the public internet \\ \\
-\textbf{Identify office365:} \\
-If access to email sent from those domains, headers will contain wealth of information (\verb|Received-header, X-header|). Also \verb|MX-record|:
-\begin{verbatim}
-nslookup
-set q=MX
-ais-security.de
-\end{verbatim}
+To privately connect to Azure, Expressroute is being used (AWS: Direct Connect) connections that don't go over the public internet. \\ 
+If access to email sent from those domains, headers will contain wealth of information (\verb|Received-header, X-header|). 
 
 
 
 \newpage
 \section*{How to identify used Cloud Services}
+\subsection*{Information "provided" by the company}
 \begin{itemize}
     \item \textbf{DNS Entries}
+    \begin{itemize}
+        \item \textbf{Nameserver}\\
+        For (some?) cloud services:
     
-    For (some?) cloudAWS services:
-    
-    \verb|dig @8.8.8.8 +trace website.com|
-    
-    When inspecting the trace there can be found different cloudAWS nameserver, indicating that the website is set up / uses the listed cloudAWS services. \\
-    \textit{So far: AWS ("awsdns"), Azure ("azure-dns"), Google cloud ("ns-cloud-c2.googledomains.com", Cloudflare ("ns.cloudflare")}
-    
-    Attention: e.g. SAP uses AWS services, however resolving their DNS entry does not show it. This is because their webpage doesn't use AWS services directly.
-    
+        \verb|dig @8.8.8.8 +trace website.com|
+        
+        When inspecting the trace there can be found different cloud nameserver, indicating that the website is set up / uses the listed cloud services. \\
+        \textit{So far: AWS ("awsdns"), Azure ("azure-dns"), Google cloud ("ns-cloud-c2.googledomains.com", Cloudflare ("ns.cloudflare")}
+        
+        Attention: e.g. SAP uses AWS services, however resolving their DNS entry does not show it. This is because their webpage doesn't use AWS services directly.
+        
+        \item \textbf{MX-record} \\
+        Can show e.g. usage of Office365
+        \begin{verbatim}
+nslookup
+set q=MX
+ais-security.de
+        \end{verbatim}
+    \end{itemize}
     
     \item \textbf{Certificates}
     \begin{itemize}
@@ -210,5 +223,18 @@ ais-security.de
         \item Microsoft: \verb|office.com|, \verb|azureedge|, \verb|voracio|
     \end{itemize}
 \end{itemize}
+
+\subsection*{Information gained on unintended ways}
+\begin{itemize}
+    \item 
+\end{itemize}
+
+
+\newpage
+\section*{How to not identify used Cloud Services}
+\begin{itemize}
+    \item Dedicated Cloud Connectivity: \\ AWS Direct Connect / Azure Expressroute / GCP Dedicated Interconnect: they run over Ethernet so traffic can only be observed by physically attaching a device to the network
+\end{itemize}
+
 
 \end{document}
