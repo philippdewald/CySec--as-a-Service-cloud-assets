@@ -73,15 +73,32 @@ Also services like Security-as-a-Service (SaaS), Firewall-as-a-Service (FWaaS) o
 \end{enumerate}
 \textbf{Further Cloud Providers:}
 \begin{itemize}
-    \item Salesforce (leading in SaaS)
-    \item Oracle Cloud
-    \item SAP Business Technology Platform (SAP BTP) \\
-    (at least SAP HANA cloud is AWS)
-    \item ServiceNow
-    \item Microsoft Office 365
-    \item OpenStack
-    \item Kamatera
-    \item Adobe (at least partially AWS!)
+    \begin{multicols}{2}
+        \item Salesforce (leading in SaaS)
+        \item Oracle Cloud
+        \item SAP Business Technology Platform (SAP BTP) \\
+        (at least SAP HANA cloud is AWS)
+        \item ServiceNow
+        \item Microsoft Office 365
+        \item OpenStack
+        \item Kamatera
+        \item Adobe (at least partially AWS!)
+    \end{multicols}
+\end{itemize}
+\textbf{Cloud Services for Small Businesses:}
+\begin{itemize}
+    \begin{multicols}{2}
+        \item Amazon S3
+        \item Azure Storage
+        \item Dropbox
+        \item Openstack
+        \item Office365 (One Drive, MS Teams)
+        \item Google Drive
+        \item iCloud
+        \item Asana
+        \item Shopify
+        \item Slack
+    \end{multicols}
 \end{itemize}
 
 
@@ -217,16 +234,40 @@ ais-security.de
     \end{itemize}
     
     \item \textbf{JavaScript}
-    
+
     By inspecting \verb|view-source|, JavaScript from used cloudproviders can be found
     \begin{itemize}
-        \item AWS: \verb|aws.amazon.com|, \verb|s3.amazonaws.com|
-        \item Cloudflare:
-        \verb|cdnjs.cloudflare.com| \textit{unsure: some say cdn is cloud service, others say not}, \verb|cloudflare|
+        \item AWS: \verb|aws.amazon.com|, \verb|s3.amazonaws.com| %pfizer.com
+        \item (Cloudflare:
+        \verb|cdnjs.cloudflare.com| \textit{unsure: some say cdn is cloud service, others say not}, \verb|cloudflare|.) \\
+        $\rightarrow$ not a cloud service we were looking for!
         \item Microsoft: \verb|office.com|, \verb|azureedge|, \verb|voracio|
     \end{itemize}
     
-    Unclear: Is there really cloud service in use or simply cdn-service? 
+    Unclear: Is there really a cloud service in use or simply cdn-service? 
+    
+    
+    \item \textbf{Response Headers}
+    
+    \verb|server| attribute can reveal information 
+    \begin{itemize}
+        \item \textbf{Amazon server:} \verb|AmazonS3|, \verb|ECS|, 
+        \item \textbf{Azure server:} \verb|Windows-Azure-Web|, \verb|Microsoft-Azure-Application*| \\
+        Furthermore, Azure hosted websites mostly have attributes like \verb|x-azure-ref|, \verb|x-azure-ref-originshield| \\
+        Often times \verb|Microsoft-IIS/10.0| servers are used, but this doesn't always implies  that Azure is used.
+        %\item \textbf{Cloudflare server:}
+        %\verb|cloudflare|
+    \end{itemize}
+    
+    
+    \item \textbf{IP address}
+    
+    To get the IP address simply run \verb|dig DOMAIN +short| \\
+    Afterwards, run \verb|whois IP_address| 
+    
+    \textit{It states that the site is behind e.g. Cloudflare. But does it always means that the company who is running the server (e.g. cloudflare) is also a cloud provider for the website?}
+    
+ 
 \end{itemize}
 
 \subsection*{Information gained on unintended ways}
