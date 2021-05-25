@@ -216,6 +216,13 @@ nslookup
 set q=MX
 ais-security.de
         \end{verbatim}
+        
+        \item \textbf{TXT-record}
+        
+        \verb|dig txt website.com|
+        
+        \item \url{https://dnsdumpster.com/}
+        
     \end{itemize}
     
     \item \textbf{Certificates}
@@ -266,6 +273,16 @@ ais-security.de
     Afterwards, run \verb|whois IP_address| 
     
     \textit{It states that the site is behind e.g. Cloudflare. But does it always means that the company who is running the server (e.g. cloudflare) is also a cloud provider for the website?}
+   
+    
+    \item \textbf{Zoom}
+    
+    Check if \verb|website.zoom.us| or \verb|website-TLD.zoom.us| exists.
+    
+    Or search for subdomains of \verb|.zoom.us| using \url{https://searchdns.netcraft.com/} or \url{https://pentest-tools.com/information-gathering/find-subdomains-of-domain} for more subdomains (nearly all when doing a "Full Scan"?; output can be saved in PDF to work as a DB?)
+    
+    \item \textbf{MS-Teams}
+    
     
  
 \end{itemize}
