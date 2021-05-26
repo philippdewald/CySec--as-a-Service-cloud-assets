@@ -276,10 +276,19 @@ ais-security.de
    
     
     \item \textbf{Zoom}
+        
+    Zoom has 4 different subscription options (\textit{Basic, Pro, Business, Enterprise}). When subscripted to \textit{Business} or \textit{Enterprise}, the company gets an own domainname (\verb|companyname.zoom.us|).
     
-    Check if \verb|website.zoom.us| or \verb|website-TLD.zoom.us| exists.
+    \begin{itemize}
+        \item \textbf{Identify Business and Enterprise model:} 
+        \begin{itemize}
+            \item Check if \verb|website.zoom.us| or \verb|website-TLD.zoom.us| exists.
+            \item Create a 'DB' collecting all subdomains of \verb|.zoom.us| and check if company is included.\\
+            \url{https://searchdns.netcraft.com/} or \url{https://pentest-tools.com/information-gathering/find-subdomains-of-domain} for even more subdomains (nearly all when doing a "Full Scan"?; output can be saved in PDF)
+            
+        \end{itemize}
+    \end{itemize}
     
-    Or search for subdomains of \verb|.zoom.us| using \url{https://searchdns.netcraft.com/} or \url{https://pentest-tools.com/information-gathering/find-subdomains-of-domain} for more subdomains (nearly all when doing a "Full Scan"?; output can be saved in PDF to work as a DB?)
     
     \item \textbf{MS-Teams}
     
