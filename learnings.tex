@@ -275,6 +275,15 @@ ais-security.de
     \textit{It states that the site is behind e.g. Cloudflare. But does it always means that the company who is running the server (e.g. cloudflare) is also a cloud provider for the website?}
    
     
+    \item \textbf{Autonomous Systems}
+    
+    Lookup of used AS: \url{https://hackertarget.com/as-ip-lookup/}
+    
+    List of all AS's: \url{https://bit.ly/34lCIMz}
+    
+    See which domains are hosted by a specific AS: \url{https://ipinfo.io/AS16509#domains}
+    
+    
     \item \textbf{Zoom}
         
     Zoom has 4 different subscription options (\textit{Basic, Pro, Business, Enterprise}). When subscripted to \textit{Business} or \textit{Enterprise}, the company gets an own domainname (\verb|companyname.zoom.us|).
@@ -285,14 +294,23 @@ ais-security.de
             \item Check if \verb|website.zoom.us| or \verb|website-TLD.zoom.us| exists.
             \item Create a 'DB' collecting all subdomains of \verb|.zoom.us| and check if company is included.\\
             \url{https://searchdns.netcraft.com/} or \url{https://pentest-tools.com/information-gathering/find-subdomains-of-domain} for even more subdomains (nearly all when doing a "Full Scan"?; output can be saved in PDF)
-            
+            \item \textit{TXT Record?}
         \end{itemize}
     \end{itemize}
     
     
     \item \textbf{MS-Teams}
     
+    %MS Teams has 3 main subscription options (\textit{Free, Business Basic, Business Standard}).
     
+    \href{https://support.microsoft.com/en-us/office/find-your-friends-and-family-in-teams-711bfcef-9e40-49d5-8df7-ee071a048c91#ID0EACAAA=Desktop}{"To find someone in Teams:"}
+    \begin{enumerate}
+        \item Click Search from the top of the main Teams window.
+        \item In the Search for people and chats field, search for a contact by their Phone, Email, or Name.
+    \end{enumerate}
+    Note: users may opt out of search
+ 
+ 
  
 \end{itemize}
 
