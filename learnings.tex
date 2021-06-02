@@ -220,6 +220,13 @@ ais-security.de
         \item \textbf{TXT-record}
         
         \verb|dig txt website.com|
+        \begin{itemize}
+            \item \verb|MS=ms| is for Office365
+            \item \verb|ZOOM_verify_<hash>| is for Zoom
+            \item \verb|include:spf.protection.outlook.com| is for outlook
+            \item \verb|dropbox-domain-verification| is for Dropbox
+        \end{itemize}
+        
         
         \item \url{https://dnsdumpster.com/}
         
@@ -279,7 +286,7 @@ ais-security.de
     
     Lookup of used AS: \url{https://hackertarget.com/as-ip-lookup/}
     
-    List of all AS's: \url{https://bit.ly/34lCIMz}
+    List of all AS's: \url{https://bit.ly/34lCIMz}, \url{https://www.ripe.net/}
     
     See which domains are hosted by a specific AS: \url{https://ipinfo.io/AS16509#domains}
     
@@ -294,7 +301,12 @@ ais-security.de
             \item Check if \verb|website.zoom.us| or \verb|website-TLD.zoom.us| exists.
             \item Create a 'DB' collecting all subdomains of \verb|.zoom.us| and check if company is included.\\
             \url{https://searchdns.netcraft.com/} or \url{https://pentest-tools.com/information-gathering/find-subdomains-of-domain} for even more subdomains (nearly all when doing a "Full Scan"?; output can be saved in PDF)
-            \item \textit{TXT Record?}
+            \item To show that you own the domain, one of three verification methods have to be made:
+            \begin{itemize}
+                \item txt-Record: \verb|ZOOM_verify_<hash>| token
+                \item HTML file on the domain
+                \item meta-tag on domain's homepage
+            \end{itemize}
         \end{itemize}
     \end{itemize}
     
@@ -309,6 +321,39 @@ ais-security.de
         \item In the Search for people and chats field, search for a contact by their Phone, Email, or Name.
     \end{enumerate}
     Note: users may opt out of search
+    
+    
+    \item \textbf{Dropbox}
+    
+    Subscription options for teams: \textit{Standard}, \textit{Advanced}, and \textit{Enterprise}.
+    
+    \begin{itemize}
+        \item Using \textit{Advanced}, \textit{Enterprise}, \textit{Education} or \textit{Professional} subscription, you can see when someone (full name and email address) has viewed a file if she has read-access. Furthermore you can see if they are the member of a business-team (and the corresponding name) or not. \\
+        \textbf{Idea} / Untypical way: create a Dropbox account (cheapest in this case probably \textit{Professional}) and create a file which is then being shared with the company. See if they accessed via "Guest" or with an Dropbox account. \\
+        \textbf{Problem}: costs money; isn't a clear indicator whether they really (don't) use Dropbox because they might access as guest even though they have an account; they might not access at all; however, this has to be practically proofed
+        
+        \item Business-Teams and Enterprise subscription models offer "domain analysis" \textit{(seeing the usage of private Dropbox accounts)} and "account registration". To be able to use this feature, you have to proof that you control the domain:
+        \begin{itemize}
+            \item TXT Record: \verb|dropbox-domain-verification|
+            \item HTML file
+            \item meta-tag on homepage
+        \end{itemize}
+    \end{itemize}
+    
+    
+    \item \textbf{Salesforce}
+    
+    (SaaS specialized in customer relationship management)
+    
+    \begin{itemize}
+        \item Salesforce services are embedded into a website. Therefore, searching / crawling a website for \verb|"salesforce"| might give an indication. \\
+        $\rightarrow$ \href{https://www.wappalyzer.com/lists/?technologies=salesforce}{Wappalyzer}
+        
+        \item Connection Finder: \\
+        Available in \textit{Group}, \textit{Professional}, \textit{Enterprise}, and \textit{Unlimited Editions} you can find out if your partners are Salesforce customer (if they enabled Connection finder).
+    \end{itemize}
+    
+    
  
  
  
