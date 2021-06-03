@@ -109,16 +109,6 @@ Also services like Security-as-a-Service (SaaS), Firewall-as-a-Service (FWaaS) o
     \item Cloud-Service-Provicer (CSP): vendors which provide Information Technology (IT) as a service over the Internet.
     \item Identify where a server is located: \url{https://research.domaintools.com/}
 \end{itemize}
-Everything that could be interesting in the future... 
-\begin{itemize}
-    \item ... to potentially identify which cloud service is used:
-    \begin{itemize}
-    \item Google Cloud offers \href{https://cloud.google.com/interconnect/docs/concepts/dedicated-overview}{\textit{Dedicated Interconnect}}
-    \item AWS offers \href{https://aws.amazon.com/directconnect/}{\textit{Direct Connect}}
-    \item Azure offers \href{https://azure.microsoft.com/en-us/services/expressroute/}{\textit{ExpressRoute}}
-    \item OpenStack offers \href{https://www.openstack.org/passport/}{\textit{OpenStack Public Cloud Passport}}
-\end{itemize}
-\end{itemize}
 
 
 \subsection*{Researching \& ideas}
@@ -131,19 +121,17 @@ Everything that could be interesting in the future...
     \item DNS entries? DNS Resolver from AWS? or CloudFront servers? Amazon Route 53 (DNS Management Service)?
     
     \item Fiddler, Wireshark, analyzing traffic?
-    
-    \item included scripts?
-    
-    \item response headers?
-    
-    \item certificates?
-    
+
     \item cookies? (probably not?)
-    
-    \item IP addresses?
     
     \item Serialization objects? \\
     \url{view-source:https://www.dowjones.com/} contains \verb|amazon_s3_cache| element??
+\end{itemize}
+
+
+\subsection*{Websites}
+\begin{itemize}
+    \item \url{https://builtwith.com}
 \end{itemize}
 
 
@@ -225,6 +213,7 @@ ais-security.de
             \item \verb|ZOOM_verify_<hash>| is for Zoom
             \item \verb|include:spf.protection.outlook.com| is for outlook
             \item \verb|dropbox-domain-verification| is for Dropbox
+            \item \verb|google-site-verification=<hahs>| is for GCP (Google Workspace)
         \end{itemize}
         
         
@@ -280,7 +269,7 @@ ais-security.de
     Afterwards, run \verb|whois IP_address| 
     
     \textit{It states that the site is behind e.g. Cloudflare. But does it always means that the company who is running the server (e.g. cloudflare) is also a cloud provider for the website?}
-   
+    
     
     \item \textbf{Autonomous Systems}
     
@@ -292,7 +281,7 @@ ais-security.de
     
     
     \item \textbf{Zoom}
-        
+    
     Zoom has 4 different subscription options (\textit{Basic, Pro, Business, Enterprise}). When subscripted to \textit{Business} or \textit{Enterprise}, the company gets an own domainname (\verb|companyname.zoom.us|).
     
     \begin{itemize}
@@ -301,7 +290,7 @@ ais-security.de
             \item Check if \verb|website.zoom.us| or \verb|website-TLD.zoom.us| exists.
             \item Create a 'DB' collecting all subdomains of \verb|.zoom.us| and check if company is included.\\
             \url{https://searchdns.netcraft.com/} or \url{https://pentest-tools.com/information-gathering/find-subdomains-of-domain} for even more subdomains (nearly all when doing a "Full Scan"?; output can be saved in PDF)
-            \item To show that you own the domain, one of three verification methods have to be made:
+            \item To prove that you own the domain, one of three verification methods have to be made:
             \begin{itemize}
                 \item txt-Record: \verb|ZOOM_verify_<hash>| token
                 \item HTML file on the domain
@@ -354,8 +343,8 @@ ais-security.de
     \end{itemize}
     
     
- 
- 
+    
+
  
 \end{itemize}
 
