@@ -130,6 +130,13 @@ Also services like Security-as-a-Service (SaaS), Firewall-as-a-Service (FWaaS) o
 
 
 \subsection*{Websites}
+\begin{itemize}
+    \item \url{https://www.observa.com/} \\ 
+    They get read-only access and scan your EC2 account via Nmap to detect if your database is publicly available, has open ports, ... 
+    \item \url{https://www.shodan.io/} \\
+    Search engine to find specific types of computers connected to the internet. Shows 10 results to user without an account and 50 to those with one. You can remove the restriction via a fee (university staff and students for free?).
+\end{itemize}
+
 \subsubsection*{Find out what websites are built with}
 \begin{itemize}
     \item \url{https://builtwith.com}
@@ -284,30 +291,27 @@ ais-security.de
     See the IP's for an ASN: \url{https://mxtoolbox.com/asn.aspx}
     
     \textbf{Amazon's ASN's used (partially) for AWS services}
-    \begin{itemize}
-        \item AS7224  AMAZON-AS - Amazon.com, Inc.; \href{https://search.arin.net/rdap/?query=AS7224}{used (partially) for AWS}
-        \item AS14618 AMAZON-AES - Amazon.com, Inc.; \href{https://search.arin.net/rdap/?query=AS14618}{used (partially) for AWS}
-        \item AS16509 AMAZON-02 - Amazon.com, Inc.; \href{https://search.arin.net/rdap/?query=AS16509}{used (partially; S3) for AWS}
-        
-        \item AS17493 AMAZON-AP-RESOURCES-AS-AP-SIN Amazon Asia-Pacific Resources Private Limited; \href{https://stat.ripe.net/app/launchpad/S1_17493_C13C31C4C34C9C22C28C20C15C6C7C14C26C29C30C17C2C21C33C16C10}{could have something to do with AWS EC2}
-        \item Private ASNs: 64512 - 65534
-        
-        \item special cases:
-        \begin{itemize}
-            \item AS9059  AWS-EU-AS Amazon Data Services Ireland Ltd; name suggests that it is linked to AWS services but there are no domains hosted on this ASN, it also has no neighbours
-            \item AS10124 AMAZON-AP-RESOURCES-AS-AP-NRT Amazon Data Services Japan KK; has something to do with EC2 but there are no domains hosted on this ASN, it also has no neighbours
-            \item AS58588 AMAZON-AU Amazon Corporate Services \href{https://stat.ripe.net/app/launchpad/S1_58588_C13C31C4C34C9C22C28C20C15C6C7C14C26C29C30C17C2C21C33C16C10}{could have something to do with AWS EC2, actually out of service}
-        \end{itemize}
-        
+    \begin{tabular}[h]{| c | p{3cm} | p{2.5cm} | p{5cm} |}
+        \hline
+        \textbf{ASN} & \textbf{Region} & \textbf{for VPN connections} & \textbf{Remarks} \\ \hline
+        AS7224 & - & - & \href{https://search.arin.net/rdap/?query=AS7224}{used for AWS} \\ \hline
+        AS14618 & - & - & \href{https://search.arin.net/rdap/?query=AS14618}{used for AWS} \\ \hline
+        AS16509 & - & - & \href{https://search.arin.net/rdap/?query=AS16509}{used for AWS (S3)} \\ \hline
+        AS17493 & Asia Pacific Singapore Region & \checkmark & \href{https://stat.ripe.net/app/launchpad/S1_17493_C13C31C4C34C9C22C28C20C15C6C7C14C26C29C30C17C2C21C33C16C10}{used for AWS} \\ \hline
+        AS10124 & Asia Pacific Tokyo region & \checkmark & there are no domains hosted on this ASN, it also has no neighbours \\ \hline
+        AS9059 & for Europe & \checkmark & there are no domains hosted on this ASN, it also has no neighbours \\ \hline
+        AS7224 & for all other regions & \checkmark &  \\ \hline
+        AS58588 &  &  & \href{https://stat.ripe.net/app/launchpad/S1_58588_C13C31C4C34C9C22C28C20C15C6C7C14C26C29C30C17C2C21C33C16C10}{actually out of service} \\ \hline
+        64512 - 65534 &  &  & Private ASNs \\ \hline
         %AMAZON ASNs which aren't used for AWS services
         %\item AS8987  Amazon Data Services Ireland Ltd; has nothing to do with AWS
         %\item AS38895 AMAZON-AS-AP Amazon.com Tech Telecom; has nothing to do with AWS
         %\item AS39111 ADSI-AS Amazon EU DC AS; has nothing to do with AWS
-    \end{itemize}
+    \end{tabular}
     
     \textbf{ASNs reserved for Azure}
     \begin{itemize}
-        \item Public ASNs: 8074 (ripe states ASNumber: 8068-8075), 8075 , 12076
+        \item Public ASNs: 8074 (ripe states ASNumber: 8068-8075), 8075 , 12076 (for ExpressRoute peering)
         \item Private ASNs: 65515, 65517, 65518, 65519, 65520
     \end{itemize}
     
@@ -378,7 +382,11 @@ ais-security.de
     \end{itemize}
     
     
+    \item \textbf{VMWare}
     
+    Related to the \href{https://thehackernews.com/2021/06/alert-critical-rce-bug-in-vmware.html?m=1}{\textit{RCE bug in VMWare vCenter Server}}, we can identify the servers via \href{https://www.shodan.io/search?query=vCenter+Server}{\textit{shodan.io}} and even more specifically with the search query \\ \verb|product:"VMware vCenter Server"|.
+    
+    %Their cloud computing virtualization platform is called vSphere
 
  
 \end{itemize}
