@@ -290,7 +290,14 @@ ais-security.de
         
     See the IP's for an ASN: \url{https://mxtoolbox.com/asn.aspx}
     
-    \textbf{Amazon's ASN's used (partially) for AWS services}
+	\textbf{ASNs reserved for Azure}
+    \begin{itemize}
+        \item Public ASNs: 8074 (ripe states ASNumber: 8068-8075), 8075 , 12076 (for ExpressRoute peering)
+        \item Private ASNs: 65515, 65517, 65518, 65519, 65520
+    \end{itemize}    
+    
+    \newpage
+    \textbf{Amazon's ASN's used (partially) for AWS services} \\ \\
     \begin{tabular}[h]{| c | p{3cm} | p{2.5cm} | p{5cm} |}
         \hline
         \textbf{ASN} & \textbf{Region} & \textbf{for VPN connections} & \textbf{Remarks} \\ \hline
@@ -308,15 +315,8 @@ ais-security.de
         %\item AS38895 AMAZON-AS-AP Amazon.com Tech Telecom; has nothing to do with AWS
         %\item AS39111 ADSI-AS Amazon EU DC AS; has nothing to do with AWS
     \end{tabular}
-    
-    \textbf{ASNs reserved for Azure}
-    \begin{itemize}
-        \item Public ASNs: 8074 (ripe states ASNumber: 8068-8075), 8075 , 12076 (for ExpressRoute peering)
-        \item Private ASNs: 65515, 65517, 65518, 65519, 65520
-    \end{itemize}
-    
+   
     Why is there an overlap on the private ASNs from AWS and Azure?
-    
     
     
     \item \textbf{Zoom}
