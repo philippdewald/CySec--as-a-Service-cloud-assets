@@ -60,7 +60,7 @@ Overview on Azure and their services (kinda ranked after use-cases)
     \item \verb|azurewebsites.net|, \verb|azurestaticapps.net| as domain ending
     \item Static and web apps can be set up with the help of Git \\ 
     $\rightarrow$ learning something via Git Accounts?
-    \item Possibilities to secure Azure: SecurityCenter, Sentinel, 
+    \item Possibilities to secure Azure: SecurityCenter,  Sentinel,  AzureDefender
 \end{itemize}
 
 \subsection*{To be checked out:}
@@ -146,6 +146,27 @@ $\rightarrow$ runs on \verb|51.116.154.67| and \verb|ASN 8075|
 
 %\newpage
 \section*{Azures SecurityCenter}
+All security recommendations:\\  \url{https://docs.microsoft.com/en-us/azure/security-center/recommendations-reference} \\ \\
+\textbf{(Most) Common security recommendations:}
+\begin{itemize}
+    \item Enable MFA
+    \item Secure (management) ports \\ 
+    (JIT network access control should be applied on VMs, VMs associated with a NSG, Management ports should be closed on your VMs)
+    \item Apply system updates \\
+    (60 \% of security breaches caused by vuln's which are already patched)
+    \item Remediate Vulnerabilities \\
+    (Vulnerabilities in ... should be remediated / Vulnerability assessment should enabled on ...)
+    \item Enable encryption at rest
+    \item Encrypt data in transit \\
+    (... should only be accessible over HTTPS / Only secure connections to ... should be enabled)
+    \item Access management and permissions \\
+    (RBAC, permissions should be removed from your subscription)
+    \item Manage network access \\
+    (CORS should not allow every resource to access your ..., Access should be restricted, Remote debugging should be turned off, IP forwarding should be disabled)
+    \item Apply DDoS protection
+    \item Enable endpoint protection, monitoring agent \& logging \\
+    (Monitoring agent should be installed, Diagnostic logs in ... should be enabled)
+\end{itemize}
 
 
 \end{document}
