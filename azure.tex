@@ -60,7 +60,7 @@ Overview on Azure and their services (kinda ranked after use-cases)
     \item \verb|azurewebsites.net|, \verb|azurestaticapps.net| as domain ending
     \item Static and web apps can be set up with the help of Git \\ 
     $\rightarrow$ learning something via Git Accounts?
-    \item Possibilities to secure Azure: SecurityCenter,  Sentinel,  AzureDefender
+    \item Possibilities to secure Azure: SecurityCenter, Sentinel, AzureDefender
 \end{itemize}
 
 \subsection*{To be checked out:}
@@ -104,7 +104,7 @@ Overview on Azure and their services (kinda ranked after use-cases)
     Missing ongoing management and security (often times just in the beginning and then not covered anymore)
     Security vulnerabilities result when Azure users don’t understand what they are responsible for and the tools and services Azure provides to help them. 
     \begin{center}
-        \includegraphics[scale=0.5]{images/McAfee_Responsibility_Model.png} \footnotemark[5]
+        \includegraphics[scale=0.5]{images/McAfee_Responsibility_Model.png} \footnotemark[5] 
     \end{center}
     
     
@@ -145,7 +145,7 @@ $\rightarrow$ runs on \verb|51.116.154.67| and \verb|ASN 8075|
 
 
 %\newpage
-\section*{Azures SecurityCenter}
+\section*{Azure SecurityCenter}
 All security recommendations:\\  \url{https://docs.microsoft.com/en-us/azure/security-center/recommendations-reference} \\ \\
 \textbf{(Most) Common security recommendations:}
 \begin{itemize}
@@ -168,5 +168,82 @@ All security recommendations:\\  \url{https://docs.microsoft.com/en-us/azure/sec
     (Monitoring agent should be installed, Diagnostic logs in ... should be enabled)
 \end{itemize}
 
+
+\section*{Azure Storage}
+\begin{itemize}
+    \item "Data Storage Access Misconfig: a user can set permissions that expose data to the entire internet in Azure Storage" \\ $\rightarrow$ Try to leak something. Can you see that from the outside?
+\end{itemize}
+Azure Blobs consists of an account and container name with the scheme: \\ \verb|https://{accountName}.blob.core.windows.net/{containerName}|\\ \\
+To find open accessible blobs: Google dorking with \verb|site:"*.blob.core.windows.net"| \\
+For secondary endpoints: \verb|site:"*-secondary.blob.core.windows.net"| \\ \\
+Possible access rights for blobs: \verb|private, blob, container|
+\begin{itemize}
+    \item Container: \url{https://unprotectedblob.blob.core.windows.net/leakedfiles/Beach.png} is openly accessible
+    \item Blob: \url{https://unprotectedblob.blob.core.windows.net/stillleakingfiles/harold.jpeg} is also openly accessible
+    \item Private: \url{https://unprotectedblob.blob.core.windows.net/protectedfiles/street.jpg} is protected
+\end{itemize}
+
+
+\section*{Azure Functions}
+\url{https://docs.microsoft.com/en-us/azure/azure-functions/functions-overview}
+\begin{itemize}
+    \item Create functions app with wrong permission and see what you can see.
+\end{itemize}
+
+\subsection*{Finding publicly available Azure Functions}
+The "vulnerability" for HttpTriggered Functions is to have the \verb|"authLevel"| set to \verb|"anonymous"| in the \verb|function.json|. \\
+If this is the case, everyone can execute the function. \\
+Examples (for some reason, sometimes the site needs to be reloaded multiple times):
+\begin{itemize}
+    \item \url{https://tryingtogetaccessfromeverywhere.azurewebsites.net/api/HttpTrigger1}
+    \item \url{https://tryingtogetaccessfromeverywhere.azurewebsites.net/api/HttpTrigger1?name=philipp}
+\end{itemize}
+\begin{center}
+    Scheme: \verb|https://{accountName}.azurewebsites.net/api/{functionName}|
+\end{center}
+However, given an \verb|azurewebsites.net| (e.g. find them via Google dorking: \\ \verb|site:"*.azurewebsites.net"|), we can look for \verb|/api/ + <existing functionnames>| (default one for HttpTriggered: \verb|HttpTrigger1|). \\ \\
+For this project we have to know which \verb|azurewebsites.net| belong to which company. Otherwise, we just check for unprotected AzureFunctions. \\ 
+Each Azure Function has an own Blob storage with at least two containers called \verb|azure-webjobs-hosts, azure-webjobs-secrets|. \\
+The blob storage is then called \verb|"storageaccount<first 5 letters from resourcegroup>| \\ \verb|<4 numbers/digits>"| \\
+If someone totally screwed up the settings (i think you can only achieve this with intention) you can find the azure function container via \\ \verb|https://{storageaccount ...}.blob.core.windows.net/{containerName}/| \\ \verb|{resourceGroupName}/<file>|. 
+However, we could use dirbuster or crawl to see containers.
+
+
+%\newpage
+\section*{Further ideas}
+\begin{itemize}
+    \item \url{https://github.com/cyberark/BlobHunter} \\
+    Looks like they loop over all existing blob storages in the given account to check if the access level is public. \\
+    They get access from the user of the program so they don't analyze from the outside.
+    \item \url{https://ninocrudele.com/the-three-most-effective-and-dangerous-cyberattacks-to-azure-and-countermeasures-part-2-attack-the-azure-storage-service}
+\end{itemize}
+
+
+\section*{Azure DNSZone}
+Nothing to be seen or learned here. \\
+Just creating basic DNS entries or setting an IP \textit{(querying the DNS entries is an old finding)}
+
+
+\section*{azurewebsites.net}
+Organization Identifiable Information (OII) and Personally Identifiable Information(PII) is what we are searching for on Azure websites
+\begin{itemize}
+    \item Can you link \verb|aistestresources.azurewebsites.net| back to AIS? Via DNS/cert./the webpage? 
+    
+    Certificate: On the first look, you don't see anything. Analyzing the cert of \verb|aistestresources.azurewebsites.net| via different tools and solution, you can't trace back the website to \verb|ais-security.de|
+
+    DNS and the rest is also a dead end
+    
+    \item Can you link an \verb|azurewebsites.net| url back to a subscription ID or related blob storage or anything else? 
+    \begin{itemize}
+        \item By checking DNS you get the location of the server which was selected in Azure \\
+        E.g. \url{tryingtogetaccessfromeverywhere.azurewebsites.net} is in Germany West-Central
+    \end{itemize}
+
+\end{itemize}
+
+
+\section*{Conclusion}
+So far, we can identify public available \textit{Azure Functions} and \textit{Blob Storages}. However, we cannot trace them back to a company, a subscription ID, or any other OII or PII.\\
+If you have given a company name, you could try to find something via Google Dorking (e.g. \verb|allintext:ais security [more possible keywords here] site:"*.azurewebsites.net"|), however this can't really be automized.
 
 \end{document}
