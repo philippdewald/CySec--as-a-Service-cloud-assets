@@ -92,7 +92,7 @@ class Detector(object):
 
 
 
-myDetector = Detector("flaws.cloud")
+myDetector = Detector("ais-security.de")
 
 myDetector.getIP()
 myDetector.getNameservers()
