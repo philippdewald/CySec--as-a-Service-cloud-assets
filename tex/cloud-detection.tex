@@ -1,0 +1,54 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in,bottom=1.5in,a4paper]{geometry}
+\usepackage{tikz}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{multicol}
+\usepackage{xcolor}
+\usepackage{tabularx}
+\usepackage{mathtools}
+\usepackage{ textcomp }
+\usepackage{graphicx}
+\usepackage{ stmaryrd }
+\usepackage{hyperref}
+\usepackage{ marvosym }
+\usepackage{ dsfont }
+\usepackage{ulem}
+\tolerance=1000
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\headheight 50pt
+
+\renewcommand{\thesection}{\Alph{section}}
+
+%edit header and footer
+\fancypagestyle{firstpage}{
+  \lhead{X-as-a-Service cloud assets}
+  \chead{\textbf{\Large cloud-detection.py}}
+  \rhead{CySec Project '21}
+}
+\lhead{}
+\rhead{X-as-a-Service cloud assets}
+
+\cfoot{}
+\rfoot{\small\thepage}
+
+\begin{document}
+\thispagestyle{firstpage}
+
+\begin{center}
+    This document describes step by step what the \verb|cloud-detection.py| does. \\
+\end{center}
+The first draft will only conclude detection of Azure, however, implementing other cloud providers should be added easily.
+\begin{itemize}
+    \item Resolve the IP 
+    \item Check the nameservers
+    \item Check the MX, TXT, ... records
+    \item Check the certificates
+    \item Check the \verb|server| attribute in the Response Header
+    \item Check the Autonomous System
+    \item 
+\end{itemize}
+
+\end{document}
