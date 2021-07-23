@@ -98,23 +98,24 @@ class Detector:
 	        names = self.crypto_cert.issuer.get_attributes_for_oid(NameOID.COMMON_NAME)
 	        self.cert_issuer = names[0].value
 	    except x509.ExtensionNotFound:
-	        return None	    
+	        return #None	    
 
 	# ------------------------------------------------------------------------------------------
 
 	def detectURLs(self):
-			url = 'https://' + self.domain		#TODO: implement https and http, depending on the case
-			#logging.info(f'Found: {url}')
-			html = r.get(url).text
-			soup = BeautifulSoup(html, 'html.parser')
-			for link in soup.find_all('a'):
-				found_url = link.get('href')
-				if not found_url.startswith('http'):
-					found_url = urljoin(url, found_url)
+		#check if website is http or https and set url accordingly:
+		url = r.get('http://' + self.domain).url	
+		#logging.info(f'Found: {url}')
+		html = r.get(url).text
+		soup = BeautifulSoup(html, 'html.parser')
+		for link in soup.find_all('a'):
+			found_url = link.get('href')
+			if not found_url.startswith('http'):
+				found_url = urljoin(url, found_url)
 
-				if found_url not in self.found_urls:
-					self.found_urls.append(found_url)
-			self.checkForCloudService(self.found_urls)
+			if found_url not in self.found_urls:
+				self.found_urls.append(found_url)
+		self.checkForCloudService(self.found_urls)
 
 
 	#def detectInHTML(self): maybe cloudbrute as inspiration
@@ -126,8 +127,10 @@ class Detector:
 		self.getIP()
 		self.getNameservers()
 		self.checkFurtherDNSEntries()
-		self.get_certificate()
-		self.get_issuer()
+		#check certificate only if one exists:
+		if 'https' in r.get('http://' + self.domain).url:
+			self.get_certificate()
+			self.get_issuer()
 		self.detectURLs()
 
 
