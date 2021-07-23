@@ -37,48 +37,39 @@ class Detector:
 				self.azure = True
 			if "aws" in str(item):
 				self.aws = True
-			if "MS=ms" in str(item):
+			if "MS=ms" in str(item) or "outlook" in str(item):
 				self.Office365 = True
 			if "ZOOM_verify" in str(item):
 				self.Zoom = True
 			if "dropbox" in str(item):
 				self.Dropbox = True
 
-
 	def getIP(self):
 		for ip in dns.resolver.resolve(self.domain):
 			self.IP = ip
 
 	def getNameservers(self):
+		nameservers = []
 		for nameserver in dns.resolver.resolve(self.domain,'NS'):
-
-			if "azure" in str(nameserver):
-				self.azure = True
-
-			if "aws" in str(nameserver):
-				self.aws = True
+			nameservers.append(nameserver)
+		self.checkForCloudService(nameservers)
 
 	def checkFurtherDNSEntries(self):
+		txt_records = []
+		try:
+			for txt in dns.resolver.resolve(self.domain,'TXT'):
+				txt_records.append(txt)
+			self.checkForCloudService(txt_records)
+		except:
+			pass	
 
-		for txt in dns.resolver.resolve(self.domain,'TXT'):
-
-			if "azure" in str(txt):
-				self.azure = True
-			if "aws" in str(txt):
-				self.aws = True
-			if "MS=ms" in str(txt):
-				self.Office365 = True
-			if "ZOOM_verify" in str(txt):
-				self.Zoom = True
-			if "dropbox" in str(txt):
-				self.Dropbox = True
-
-			#TODO: handle empty txt records
-
-		for mx in dns.resolver.resolve(self.domain,'MX'):
-			
-			if "outlook" in str(mx):
-				self.Office365 = True
+		try:
+			mx_records = []
+			for mx in dns.resolver.resolve(self.domain,'MX'):
+				mx_records.append(mx)
+			self.checkForCloudService(mx_records)
+		except:
+			pass
 
 
 	#inspired by https://gist.github.com/gdamjan/55a8b9eec6cf7b771f92021d93b87b2c --------------
@@ -127,7 +118,6 @@ class Detector:
 
 
 	#def detectInHTML(self): maybe cloudbrute as inspiration
-
 	#def checkAutonmousSystem(self)
 	#def checkResponseHeader(self)
 
@@ -139,7 +129,6 @@ class Detector:
 		self.get_certificate()
 		self.get_issuer()
 		self.detectURLs()
-		print(self.azure)
 
 
 if __name__ == "__main__":
