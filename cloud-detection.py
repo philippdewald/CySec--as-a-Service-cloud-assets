@@ -18,8 +18,8 @@ class Detector:
 	def __init__(self, domain):
 		self.domain = domain
 
-		self.azure = False
-		self.aws = False
+		self.Azure = False
+		self.AWS = False
 		self.IP = []
 		self.Office365 = False
 		self.Zoom = False
@@ -33,16 +33,17 @@ class Detector:
 
 	def checkForCloudService(self, data):
 		for item in data:
-			if "azure" in str(item):
-				self.azure = True
-			if "aws" in str(item):
-				self.aws = True
+			if "azure" in str(item) or "core.windows.net" in str(item) or "azurewebsites.net" in str(item):
+				self.Azure = True
+			if "aws" in str(item) or "s3-website" in str(item):
+				self.AWS = True
 			if "MS=ms" in str(item) or "outlook" in str(item):
 				self.Office365 = True
 			if "ZOOM_verify" in str(item):
 				self.Zoom = True
 			if "dropbox" in str(item):
 				self.Dropbox = True
+
 
 	def getIP(self):
 		for ip in dns.resolver.resolve(self.domain):
@@ -108,8 +109,13 @@ class Detector:
 		#logging.info(f'Found: {url}')
 		html = r.get(url).text
 		soup = BeautifulSoup(html, 'html.parser')
-		for link in soup.find_all('a'):
+		for link in soup.findAll('a'):
 			found_url = link.get('href')
+			#print(found_url)
+
+			if found_url is None or len(found_url) == 0:
+				continue
+
 			if not found_url.startswith('http'):
 				found_url = urljoin(url, found_url)
 
@@ -117,10 +123,28 @@ class Detector:
 				self.found_urls.append(found_url)
 		self.checkForCloudService(self.found_urls)
 
+	def checkAutonmousSystem(self):
+		# done via querying https://hackertarget.com since there is no handy python library
+		# 50 free queries per day
+		response = r.get(f'https://api.hackertarget.com/aslookup/?q={self.IP}')
+		response_text = response.text.split('"')
+		ASN = response_text[3]
+		ASName = response_text[7]
+
+		AzureASN = ['8068', '8069', '8070', '8071', '8072', '8073', '8074', '8075']
+		AWSASN = ['7224', '14618', '16509', '17493', '10124', '9059']
+
+		if ASN in AzureASN:
+			self.Azure = True
+		if ASN in AWSASN:
+			self.AWS = True
+
+		# alternatively we could check for keywords like Microsoft or Amazon in ASName, 
+		# but the program would state that e.g. amazon.com runs on the cloud. Is this really the case?
+
+	
 
 	#def detectInHTML(self): maybe cloudbrute as inspiration
-	#def checkAutonmousSystem(self)
-	#def checkResponseHeader(self)
 
 
 	def run(self):
@@ -132,6 +156,7 @@ class Detector:
 			self.get_certificate()
 			self.get_issuer()
 		self.detectURLs()
+		self.checkAutonmousSystem()
 
 
 if __name__ == "__main__":
