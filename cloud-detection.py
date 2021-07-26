@@ -3,6 +3,7 @@ import dns.resolver
 import logging
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
+import os
 
 
 from OpenSSL import SSL
@@ -29,6 +30,9 @@ class Detector:
 		self.cert_issuer = None
 
 		self.found_urls = []
+
+		self.AzureASN = ['8068', '8069', '8070', '8071', '8072', '8073', '8074', '8075']
+		self.AWSASN = ['7224', '14618', '16509', '17493', '10124', '9059']
 
 
 	def checkForCloudService(self, data):
@@ -106,12 +110,10 @@ class Detector:
 	def detectURLs(self):
 		#check if website is http or https and set url accordingly:
 		url = r.get('http://' + self.domain).url	
-		#logging.info(f'Found: {url}')
 		html = r.get(url).text
 		soup = BeautifulSoup(html, 'html.parser')
 		for link in soup.findAll('a'):
 			found_url = link.get('href')
-			#print(found_url)
 
 			if found_url is None or len(found_url) == 0:
 				continue
@@ -121,6 +123,7 @@ class Detector:
 
 			if found_url not in self.found_urls:
 				self.found_urls.append(found_url)
+
 		self.checkForCloudService(self.found_urls)
 
 	def checkAutonmousSystem(self):
@@ -131,18 +134,23 @@ class Detector:
 		ASN = response_text[3]
 		ASName = response_text[7]
 
-		AzureASN = ['8068', '8069', '8070', '8071', '8072', '8073', '8074', '8075']
-		AWSASN = ['7224', '14618', '16509', '17493', '10124', '9059']
-
-		if ASN in AzureASN:
+		if ASN in self.AzureASN:
 			self.Azure = True
-		if ASN in AWSASN:
+		if ASN in self.AWSASN:
 			self.AWS = True
 
 		# alternatively we could check for keywords like Microsoft or Amazon in ASName, 
 		# but the program would state that e.g. amazon.com runs on the cloud. Is this really the case?
 
-	
+	def flAWS_cloud(self):
+		# implementation of some useful tools from http://flaws.cloud/
+		# no detection, but gaining insights
+		if self.AWS:
+			nslookup = os.popen('nslookup ' + str(self.IP) + ' 8.8.8.8').read()
+
+			region = nslookup.split('s3-website-',1)[1].split('.amazonaws.com',1)[0]
+			bucket_list = os.popen('aws s3 ls s3://' + self.domain + '/ --no-sign-request --region ' + region).read()
+			
 
 	#def detectInHTML(self): maybe cloudbrute as inspiration
 
@@ -151,12 +159,19 @@ class Detector:
 		self.getIP()
 		self.getNameservers()
 		self.checkFurtherDNSEntries()
-		#check certificate only if one exists:
+		# check certificate only if one exists:
 		if 'https' in r.get('http://' + self.domain).url:
 			self.get_certificate()
 			self.get_issuer()
 		self.detectURLs()
 		self.checkAutonmousSystem()
+		self.flAWS_cloud()
+
+		if self.Azure: logging.info(f'Detected: Microsoft Azure')
+		if self.AWS: logging.info(f'Detected: Amazon Web Services')
+		if self.Office365: logging.info(f'Detected: Office365')
+		if self.Zoom: logging.info(f'Detected: Zoom')
+		if self.Dropbox: logging.info(f'Detected: Dropbox')
 
 
 if __name__ == "__main__":
