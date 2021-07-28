@@ -36,10 +36,16 @@ class Detector:
 
 
 	def checkForCloudService(self, data):
+
+		AzureKeywords = ['azure', 'Azure', 'core.windows.net', 'azurewebsites.net']
+		AWSKeywords = ['aws', 's3-website', 'S3', 'EC2', 'ECS']
+
 		for item in data:
-			if "azure" in str(item) or "core.windows.net" in str(item) or "azurewebsites.net" in str(item):
+			# don't go for 'Microsoft'!
+			if "azure" in str(item) or "core.windows.net" in str(item) or "azurewebsites.net" in str(item) or "Azure" in str(item):
 				self.Azure = True
-			if "aws" in str(item) or "s3-website" in str(item):
+			# don't go for 'Amazon'!
+			if "aws" in str(item) or "s3-website" in str(item) or "S3" in str(item) or "EC2" in str(item) or "ECS" in str(item):	
 				self.AWS = True
 			if "MS=ms" in str(item) or "outlook" in str(item):
 				self.Office365 = True
@@ -55,9 +61,12 @@ class Detector:
 
 	def getNameservers(self):
 		nameservers = []
-		for nameserver in dns.resolver.resolve(self.domain,'NS'):
-			nameservers.append(nameserver)
-		self.checkForCloudService(nameservers)
+		try:
+			for nameserver in dns.resolver.resolve(self.domain,'NS'):
+				nameservers.append(nameserver)
+			self.checkForCloudService(nameservers)
+		except:
+			pass
 
 	def checkFurtherDNSEntries(self):
 		txt_records = []
@@ -139,9 +148,6 @@ class Detector:
 		if ASN in self.AWSASN:
 			self.AWS = True
 
-		# alternatively we could check for keywords like Microsoft or Amazon in ASName, 
-		# but the program would state that e.g. amazon.com runs on the cloud. Is this really the case?
-
 	def flAWS_cloud(self):
 		# implementation of some useful tools from http://flaws.cloud/
 		# no detection, but gaining insights
@@ -150,13 +156,18 @@ class Detector:
 
 			region = nslookup.split('s3-website-',1)[1].split('.amazonaws.com',1)[0]
 			bucket_list = os.popen('aws s3 ls s3://' + self.domain + '/ --no-sign-request --region ' + region).read()
-			
+
+	def checkServer(self):
+		url = r.get('http://' + self.domain).url
+		server = r.get(url).headers['Server']
+		self.checkForCloudService([server])
 
 	#def detectInHTML(self): maybe cloudbrute as inspiration
 
 
 	def run(self):
 		self.getIP()
+		self.checkForCloudService([self.domain])
 		self.getNameservers()
 		self.checkFurtherDNSEntries()
 		# check certificate only if one exists:
@@ -166,6 +177,7 @@ class Detector:
 		self.detectURLs()
 		self.checkAutonmousSystem()
 		self.flAWS_cloud()
+		self.checkServer()
 
 		if self.Azure: logging.info(f'Detected: Microsoft Azure')
 		if self.AWS: logging.info(f'Detected: Amazon Web Services')
