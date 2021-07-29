@@ -111,6 +111,9 @@ class Detector:
 	    try:
 	        names = self.crypto_cert.issuer.get_attributes_for_oid(NameOID.COMMON_NAME)
 	        self.cert_issuer = names[0].value
+	        print(self.cert_issuer)
+	        if "Amazon" in self.cert_issuer: self.AWS = True
+	        if "Microsoft" in self.cert_issuer: self.Azure = True
 	    except x509.ExtensionNotFound:
 	        return #None	    
 
@@ -152,10 +155,13 @@ class Detector:
 		# implementation of some useful tools from http://flaws.cloud/
 		# no detection, but gaining insights
 		if self.AWS:
-			nslookup = os.popen('nslookup ' + str(self.IP) + ' 8.8.8.8').read()
+			try:
+				nslookup = os.popen('nslookup ' + str(self.IP) + ' 8.8.8.8').read()
 
-			region = nslookup.split('s3-website-',1)[1].split('.amazonaws.com',1)[0]
-			bucket_list = os.popen('aws s3 ls s3://' + self.domain + '/ --no-sign-request --region ' + region).read()
+				region = nslookup.split('s3-website-',1)[1].split('.amazonaws.com',1)[0]
+				bucket_list = os.popen('aws s3 ls s3://' + self.domain + '/ --no-sign-request --region ' + region).read()
+			except:
+				pass
 
 	def checkServer(self):
 		url = r.get('http://' + self.domain).url
