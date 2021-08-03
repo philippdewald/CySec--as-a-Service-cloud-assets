@@ -5,7 +5,6 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 import os
 
-
 from OpenSSL import SSL
 from cryptography import x509
 from cryptography.x509.oid import NameOID
@@ -155,6 +154,9 @@ class Detector:
 
 		self.checkForCloudService(self.found_urls, 'linked website from cloud provider')
 
+	def detectInSourceCode(self):
+		pass
+
 	def checkAutonmousSystem(self):
 		# done via querying https://hackertarget.com since there is no handy python library
 		# 50 free queries per day
@@ -190,7 +192,6 @@ class Detector:
 		except:
 			return
 
-	#def detectInHTML(self): maybe cloudbrute as inspiration
 
 
 	def run(self):
@@ -226,4 +227,8 @@ class Detector:
 		if no_output: logging.info(f'{Fore.YELLOW}Nothing detected{Style.RESET_ALL}')
 
 if __name__ == "__main__":
-	Detector("ais-security.de").run()
+	domain = input('Provide a domain to check: ')
+	if 'http' in domain:
+		logging.info(f'{Fore.RED}Don\'t provide http / https{Style.RESET_ALL}')
+		domain = input('Provide a domain to check: ')
+	Detector(domain).run()

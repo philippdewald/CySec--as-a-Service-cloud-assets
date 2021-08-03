@@ -6,6 +6,11 @@ from requests_html import HTMLSession
 
 import pprint as p
 import time
+from bs4 import BeautifulSoup
+
+from colorama import Fore
+from colorama import Style
+
 
 def get_source(url):
     """Return the source code for the provided URL. 
@@ -42,13 +47,15 @@ def scrape(query):
                       'http://webcache.googleusercontent.', 
                       'https://policies.google.',
                       'https://support.google.',
-                      'https://maps.google.')
+                      'https://maps.google.',
+                      'https://translate.google.')
     bing_domains = ('https://www.bing.',
     				'https://www.bingplaces.',
     				'https://bingplaces.',
     				'http://help.bing.',
     				'http://go.microsoft.',
-    				'https://go.microsoft.')
+    				'https://go.microsoft.',
+                    'http://www.microsofttranslator.')
 
     for url in links_from_google[:]:
         if url.startswith(google_domains):
@@ -58,8 +65,44 @@ def scrape(query):
     	if url.startswith(bing_domains):
     		links_from_bing.remove(url)
 
-    p.pprint(links_from_google)
-    p.pprint(links_from_bing)
+    #p.pprint(links_from_google)
+    #p.pprint(links_from_bing)
+
+    get_associated_websites(list(dict.fromkeys(links_from_google + links_from_bing)))
+
+
+def get_associated_websites(links):
+    associated_websites = []
+    potential_associated_websites = []
+    for link in links:
+        if link.endswith('.pdf'):
+            continue
+        html = requests.get(link).text
+        soup = BeautifulSoup(html, 'html.parser')
+
+        for item in soup.findAll('a'):
+            href = item.get('href')
+            if href is None or len(href) == 0:
+                continue
+
+            # see if there is a link to the main website
+            if main_domain in href:
+                if link not in associated_websites:
+                    associated_websites.append(link)
+                continue
+
+            # see if the keyword is in linked urls
+            if keyword in href:
+                if link not in associated_websites and link not in potential_associated_websites:
+                    potential_associated_websites.append(link)
+
+    if associated_websites:
+        print(f'{Fore.RED}We\'ve got them! Their associated websites are as follows:{Style.RESET_ALL}')
+        p.pprint(associated_websites)
+
+    if potential_associated_websites:
+        print(f'{Fore.YELLOW}Potentially associated websites are as follows:{Style.RESET_ALL}')
+        p.pprint(potential_associated_websites)
 
 
 """
@@ -68,11 +111,13 @@ https://findwork.dev/blog/advanced-usage-python-requests-timeouts-retries-hooks/
 Category: Retry on failure
 """
 
+global keyword
+keyword = input('Provide a companyname / keyword: ')
+global main_domain
+main_domain = input('Provide the company\'s classic domain: ')
 
-data = "beck bücher"
 
-
-print('Amazon websites:')
-scrape("site:s3.amazonaws.com " + data)
-print('Azure websites:')
-scrape("site:azurewebsites.net " + data)
+print(f'{Fore.CYAN}Checking Amazon websites{Style.RESET_ALL}')
+scrape("site:s3.amazonaws.com -filetype:pdf " + keyword)
+print(f'{Fore.CYAN}Checking Azure websites{Style.RESET_ALL}')
+scrape("site:azurewebsites.net -filetype:pdf " + keyword)
