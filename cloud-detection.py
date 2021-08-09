@@ -4,6 +4,7 @@ import logging
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 import os
+import re
 
 from OpenSSL import SSL
 from cryptography import x509
@@ -44,27 +45,28 @@ class Detector:
 
 	def checkForCloudService(self, data, use_case):
 
-		AzureKeywords = ['azure', 'Azure', 'core.windows.net', 'azurewebsites.net']
-		AWSKeywords = ['aws', 's3-website', 'S3', 'EC2', 'ECS']
+		AzureKeywords = ['azure', 'Azure', 'core.windows.net', 'azurewebsites.net', '1drv.com', 'onedrive.live']
+		AWSKeywords = ['awsdns', 's3-website', 'S3', 'EC2', 'ECS', 'amazonaws']
 
 		for item in data:
 			# don't go for 'Microsoft'!
-			if "azure" in str(item) or "core.windows.net" in str(item) or "azurewebsites.net" in str(item) or "Azure" in str(item):
+			if any(azurekeyword.casefold() in str(item).casefold() for azurekeyword in AzureKeywords):
 				self.Azure = True
 				if 'http' in str(item):
 					self.Azure_links.append(str(item))
 				self.Azure_use_case.append(use_case)
+
 			# don't go for 'Amazon'!
-			if "aws" in str(item) or "s3-website" in str(item) or "S3" in str(item) or "EC2" in str(item) or "ECS" in str(item):	
+			if any(awskeyword.casefold() in str(item).casefold() for awskeyword in AWSKeywords):	
 				self.AWS = True
 				if 'http' in str(item):
 					self.AWS_links.append(str(item))
 				self.AWS_use_case.append(use_case)
-			if "MS=ms" in str(item) or "outlook" in str(item):
+			if "MS=ms".casefold() in str(item).casefold() or "outlook" in str(item):
 				self.Office365 = True
-			if "ZOOM_verify" in str(item):
+			if "ZOOM_verify".casefold() in str(item).casefold():
 				self.Zoom = True
-			if "dropbox" in str(item):
+			if "dropbox".casefold() in str(item).casefold():
 				self.Dropbox = True
 
 
@@ -152,7 +154,21 @@ class Detector:
 			if found_url not in self.found_urls:
 				self.found_urls.append(found_url)
 
-		self.checkForCloudService(self.found_urls, 'linked website from cloud provider')
+		AzureWebsites = ['core.windows.net', 'azurewebsites.net', 'azurestaticapps', 'onedrive.live.com', '1drv.com']
+		AWSWebsites = ['s3-website', 'amazonaws']
+
+		for item in self.found_urls:
+			if any(azurewebsite in str(item) for azurewebsite in AzureWebsites):
+				self.Azure = True
+				self.Azure_links.append(str(item))
+				self.Azure_use_case.append('linked website from cloud provider')
+
+			if any(awswebsite in str(item) for awswebsite in AWSWebsites):
+				self.AWS = True
+				self.AWS_links.append(str(item))
+				self.AWS_use_case.append('linked website from cloud provider')
+
+		#self.checkForCloudService(self.found_urls, 'linked website from cloud provider')
 
 	def detectInSourceCode(self):
 		pass
@@ -160,17 +176,20 @@ class Detector:
 	def checkAutonmousSystem(self):
 		# done via querying https://hackertarget.com since there is no handy python library
 		# 50 free queries per day
-		response = r.get(f'https://api.hackertarget.com/aslookup/?q={self.IP}')
-		response_text = response.text.split('"')
-		ASN = response_text[3]
-		ASName = response_text[7]
+		try:
+			response = r.get(f'https://api.hackertarget.com/aslookup/?q={self.IP}')
+			response_text = response.text.split('"')
+			ASN = response_text[3]
+			ASName = response_text[7]
 
-		if ASN in self.AzureASN:
-			self.Azure = True
-			self.Azure_use_case.append('Autonomous System')
-		if ASN in self.AWSASN:
-			self.AWS = True
-			self.AWS_use_case.append('Autonomous System')
+			if ASN in self.AzureASN:
+				self.Azure = True
+				self.Azure_use_case.append('Autonomous System')
+			if ASN in self.AWSASN:
+				self.AWS = True
+				self.AWS_use_case.append('Autonomous System')
+		except IndexError:
+			print('Autonomous System Detection API has reached its todays limit')
 
 	def flAWS_cloud(self):
 		# implementation of some useful tools from http://flaws.cloud/
@@ -229,6 +248,6 @@ class Detector:
 if __name__ == "__main__":
 	domain = input('Provide a domain to check: ')
 	if 'http' in domain:
-		logging.info(f'{Fore.RED}Don\'t provide http / https{Style.RESET_ALL}')
+		logging.info(f'{Fore.RED}Please don\'t give http / https{Style.RESET_ALL}')
 		domain = input('Provide a domain to check: ')
 	Detector(domain).run()
