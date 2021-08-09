@@ -105,22 +105,30 @@ class Detector:
 	# sometimes it doesn't do what it should... TODO fix this
 
 	def get_certificate(self):
-	    hostname_idna = idna.encode(self.domain)
-	    sock = socket()
+		try:
+		    hostname_idna = idna.encode(self.domain)
+		    sock = socket()
 
-	    sock.connect((self.domain, 443))
-	    ctx = SSL.Context(SSL.SSLv23_METHOD) # most compatible
-	    ctx.check_hostname = False
-	    ctx.verify_mode = SSL.VERIFY_NONE
+		    sock.settimeout(10)
+		    sock.connect((self.domain, 443))
+		    sock.settimeout(None)
+		    ctx = SSL.Context(SSL.SSLv23_METHOD) # most compatible
+		    ctx.check_hostname = False
+		    ctx.verify_mode = SSL.VERIFY_NONE
 
-	    sock_ssl = SSL.Connection(ctx, sock)
-	    sock_ssl.set_connect_state()
-	    sock_ssl.set_tlsext_host_name(hostname_idna)
-	    sock_ssl.do_handshake()
-	    cert = sock_ssl.get_peer_certificate()
-	    self.crypto_cert = cert.to_cryptography()
-	    sock_ssl.close()
-	    sock.close()
+		    sock_ssl = SSL.Connection(ctx, sock)
+		    sock_ssl.set_connect_state()
+		    sock_ssl.set_tlsext_host_name(hostname_idna)
+		    sock_ssl.do_handshake()
+		    cert = sock_ssl.get_peer_certificate()
+		    self.crypto_cert = cert.to_cryptography()
+		    sock_ssl.close()
+		    sock.close()
+
+		    self.get_issuer()
+
+		except:
+			pass
 
 	def get_issuer(self):
 	    try:
@@ -222,7 +230,6 @@ class Detector:
 		# check certificate only if one exists:
 		if 'https' in r.get('http://' + self.domain).url:
 			self.get_certificate()
-			self.get_issuer()
 		self.detectURLs()
 		self.checkAutonmousSystem()
 		self.flAWS_cloud()
