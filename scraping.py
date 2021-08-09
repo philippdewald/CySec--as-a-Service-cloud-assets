@@ -23,7 +23,7 @@ def get_source(url):
     """
 
     try:
-        session = HTMLSession()
+        session = HTMLSession() #HTMLSession()
         user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_1) AppleWebKit/602.2.14 (KHTML, like Gecko) Version/10.0.1 Safari/602.2.14'
         header = {'User-Agent': user_agent, 'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'}
         response = session.get(url, headers=header)
@@ -77,7 +77,13 @@ def get_associated_websites(links):
     for link in links:
         if link.endswith('.pdf'):
             continue
-        html = requests.get(link).text
+
+        # handle websites that can't be reached
+        try:
+            html = requests.get(link).text
+        except:
+            continue
+
         soup = BeautifulSoup(html, 'html.parser')
 
         for item in soup.findAll('a'):
@@ -103,6 +109,9 @@ def get_associated_websites(links):
     if potential_associated_websites:
         print(f'{Fore.YELLOW}Potentially associated websites are as follows:{Style.RESET_ALL}')
         p.pprint(potential_associated_websites)
+
+    if not associated_websites and not potential_associated_websites:
+        print('Nothing detected here.') 
 
 
 """
