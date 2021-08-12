@@ -232,7 +232,7 @@ class Detector:
 		if 'https' in r.get('http://' + self.domain).url:
 			self.get_certificate()
 		self.detectURLs()
-		#self.checkAutonmousSystem()
+		self.checkAutonmousSystem()
 		self.flAWS_cloud()
 		self.checkServer()
 

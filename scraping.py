@@ -104,7 +104,7 @@ def get_associated_websites(links):
                     potential_associated_websites.append(link)
 
         # look for website content
-        TODO
+        #TODO
         # see if we get some information out of copyright text, terms of service, privacy policy text
 
 
