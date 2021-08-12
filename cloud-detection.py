@@ -79,7 +79,6 @@ class Detector:
 		try:
 			for nameserver in dns.resolver.resolve(self.domain,'NS'):
 				nameservers.append(nameserver)
-			print(nameservers)
 			self.checkForCloudService(nameservers, 'nameserver')
 		except:
 			pass

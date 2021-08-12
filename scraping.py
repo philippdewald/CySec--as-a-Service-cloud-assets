@@ -98,8 +98,8 @@ def get_associated_websites(links):
                     associated_websites.append(link)
                 continue
 
-            # see if the keyword is in linked urls
-            if keyword in href:
+            # see if the companyname is in linked urls
+            if companyname in href:
                 if link not in associated_websites and link not in potential_associated_websites:
                     potential_associated_websites.append(link)
 
@@ -127,13 +127,26 @@ https://findwork.dev/blog/advanced-usage-python-requests-timeouts-retries-hooks/
 Category: Retry on failure
 """
 
-global keyword
-keyword = input('Provide a companyname / keyword: ')
+global companyname
+companyname = input('Provide the companyname: ')
 global main_domain
 main_domain = input('Provide the company\'s classic domain: ')
 
+global keyword
+keyword = None
+keyword_option = input('Do you want to use an additional keyword? [y/n]: ')
+if keyword_option == 'y' or keyword_option == 'yes':
+    keyword = input('Enter keyword: ')
+
 
 print(f'{Fore.CYAN}Checking Amazon websites{Style.RESET_ALL}')
-scrape("site:s3.amazonaws.com -filetype:pdf " + keyword)
+if keyword:
+    scrape("site:s3.amazonaws.com -filetype:pdf " + companyname + " " + keyword)
+else:
+    scrape("site:s3.amazonaws.com -filetype:pdf " + companyname)
+    
 print(f'{Fore.CYAN}Checking Azure websites{Style.RESET_ALL}')
-scrape("site:azurewebsites.net -filetype:pdf " + keyword)
+if keyword:
+    scrape("site:azurewebsites.net -filetype:pdf " + companyname + " " + keyword)
+else:
+    scrape("site:azurewebsites.net -filetype:pdf " + companyname)
