@@ -46,7 +46,7 @@ class Detector:
 	def checkForCloudService(self, data, use_case):
 
 		AzureKeywords = ['azure', 'Azure', 'core.windows.net', 'azurewebsites.net', '1drv.com', 'onedrive.live']
-		AWSKeywords = ['awsdns', 's3-website', 'S3', 'EC2', 'ECS', 'amazonaws']
+		AWSKeywords = ['awsdns', 's3-website', 'EC2', 'ECS', 'amazonaws'] # don't set 'S3' as casefold!
 
 		for item in data:
 			# don't go for 'Microsoft'!
@@ -57,7 +57,7 @@ class Detector:
 				self.Azure_use_case.append(use_case)
 
 			# don't go for 'Amazon'!
-			if any(awskeyword.casefold() in str(item).casefold() for awskeyword in AWSKeywords):	
+			if any(awskeyword.casefold() in str(item).casefold() for awskeyword in AWSKeywords) or 'S3' in str(item):	
 				self.AWS = True
 				if 'http' in str(item):
 					self.AWS_links.append(str(item))
@@ -79,6 +79,7 @@ class Detector:
 		try:
 			for nameserver in dns.resolver.resolve(self.domain,'NS'):
 				nameservers.append(nameserver)
+			print(nameservers)
 			self.checkForCloudService(nameservers, 'nameserver')
 		except:
 			pass

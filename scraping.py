@@ -86,6 +86,7 @@ def get_associated_websites(links):
 
         soup = BeautifulSoup(html, 'html.parser')
 
+        # look for links
         for item in soup.findAll('a'):
             href = item.get('href')
             if href is None or len(href) == 0:
@@ -101,6 +102,12 @@ def get_associated_websites(links):
             if keyword in href:
                 if link not in associated_websites and link not in potential_associated_websites:
                     potential_associated_websites.append(link)
+
+        # look for website content
+        TODO
+        # see if we get some information out of copyright text, terms of service, privacy policy text
+
+
 
     if associated_websites:
         print(f'{Fore.RED}We\'ve got them! Their associated websites are as follows:{Style.RESET_ALL}')
