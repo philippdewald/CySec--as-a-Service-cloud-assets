@@ -20,6 +20,8 @@ import re
 def get_source(url):
     """Return the source code for the provided URL. 
 
+       Send header and sleep in order to prevent from a 429 status code.
+
     Args: 
         url (string): URL of the page to scrape.
 
@@ -168,7 +170,7 @@ def get_associated_websites(links):
         p.pprint(potential_associated_websites)
 
     if not associated_websites and not potential_associated_websites:
-        print('Nothing detected here.') 
+        print('Nothing detected here.')
 
 
 # from https://stackoverflow.com/questions/1936466/beautifulsoup-grab-visible-webpage-text
