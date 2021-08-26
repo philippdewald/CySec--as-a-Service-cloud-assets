@@ -108,6 +108,14 @@ class Detector:
 		except:
 			pass
 
+		try:
+			soa_records = []
+			for soa in dns.resolver.resolve(self.domain,'SOA'):
+				cname_records.append(soa)
+			self.checkForCloudService(cname_records, 'SOA records')
+		except:
+			pass
+
 	#inspired by https://gist.github.com/gdamjan/55a8b9eec6cf7b771f92021d93b87b2c --------------
 	# sometimes it doesn't do what it should... TODO fix this
 
