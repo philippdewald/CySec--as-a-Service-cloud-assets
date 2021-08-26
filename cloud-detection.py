@@ -45,7 +45,7 @@ class Detector:
 
 	def checkForCloudService(self, data, use_case):
 
-		AzureKeywords = ['azure', 'Azure', 'core.windows.net', 'azurewebsites.net', '1drv.com', 'onedrive.live']
+		AzureKeywords = ['azure', 'Azure', 'core.windows.net', 'azurewebsites.net', '1drv.com', 'onedrive.live', 'azureedge']
 		AWSKeywords = ['awsdns', 's3-website', 'EC2', 'ECS', 'amazonaws'] # don't set 'S3' as casefold!
 
 		for item in data:
@@ -100,32 +100,39 @@ class Detector:
 		except:
 			pass
 
+		try:
+			cname_records = []
+			for cname in dns.resolver.resolve(self.domain,'CNAME'):
+				cname_records.append(cname)
+			self.checkForCloudService(cname_records, 'CNAME records')
+		except:
+			pass
 
 	#inspired by https://gist.github.com/gdamjan/55a8b9eec6cf7b771f92021d93b87b2c --------------
 	# sometimes it doesn't do what it should... TODO fix this
 
 	def get_certificate(self):
 		try:
-		    hostname_idna = idna.encode(self.domain)
-		    sock = socket()
+			hostname_idna = idna.encode(self.domain)
+			sock = socket()
 
-		    sock.settimeout(10)
-		    sock.connect((self.domain, 443))
-		    sock.settimeout(None)
-		    ctx = SSL.Context(SSL.SSLv23_METHOD) # most compatible
-		    ctx.check_hostname = False
-		    ctx.verify_mode = SSL.VERIFY_NONE
+			sock.settimeout(10)
+			sock.connect((self.domain, 443))
+			sock.settimeout(None)
+			ctx = SSL.Context(SSL.SSLv23_METHOD) # most compatible
+			ctx.check_hostname = False
+			ctx.verify_mode = SSL.VERIFY_NONE
 
-		    sock_ssl = SSL.Connection(ctx, sock)
-		    sock_ssl.set_connect_state()
-		    sock_ssl.set_tlsext_host_name(hostname_idna)
-		    sock_ssl.do_handshake()
-		    cert = sock_ssl.get_peer_certificate()
-		    self.crypto_cert = cert.to_cryptography()
-		    sock_ssl.close()
-		    sock.close()
+			sock_ssl = SSL.Connection(ctx, sock)
+			sock_ssl.set_connect_state()
+			sock_ssl.set_tlsext_host_name(hostname_idna)
+			sock_ssl.do_handshake()
+			cert = sock_ssl.get_peer_certificate()
+			self.crypto_cert = cert.to_cryptography()
+			sock_ssl.close()
+			sock.close()
 
-		    self.get_issuer()
+			self.get_issuer()
 
 		except:
 			pass
@@ -234,6 +241,11 @@ class Detector:
 		self.checkAutonmousSystem()
 		self.flAWS_cloud()
 		self.checkServer()
+
+		# check for www.<domain> since lot's of websites have their entries there
+		self.domain = 'www.' + self.domain
+		self.checkFurtherDNSEntries()
+
 
 		self.Azure_use_case = list(dict.fromkeys(self.Azure_use_case))
 		self.AWS_use_case = list(dict.fromkeys(self.AWS_use_case))

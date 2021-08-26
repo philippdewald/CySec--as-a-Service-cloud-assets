@@ -89,6 +89,8 @@ def check_for_correct_links(links):
             if link not in associated_services and link not in potential_associated_services:
                 potential_associated_services.append(link)
 
+    #check for DNS entries 
+    
 
     if associated_services:
         print(f'{Fore.RED}We\'ve got them! Their associated services are as follows:{Style.RESET_ALL}')
