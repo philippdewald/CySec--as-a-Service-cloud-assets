@@ -53,7 +53,8 @@ def service_scraping(query):
                       'https://policies.google.',
                       'https://support.google.',
                       'https://maps.google.',
-                      'https://translate.google.')
+                      'https://translate.google.',
+                      'https://podcasts.google.')
     bing_domains = ('https://www.bing.',
                     'https://www.bingplaces.',
                     'https://bingplaces.',
@@ -72,12 +73,11 @@ def service_scraping(query):
 
     #p.pprint(links_from_google)
     #p.pprint(links_from_bing)
-    check_for_correct_links(list(dict.fromkeys(links_from_google + links_from_bing)))
+    links = list(dict.fromkeys(links_from_google + links_from_bing))
 
 
 
-
-def check_for_correct_links(links):
+#def check_for_correct_links(links):
     associated_services = []
     potential_associated_services = []
 
@@ -91,19 +91,7 @@ def check_for_correct_links(links):
 
     #check for DNS entries 
     
-
-    if associated_services:
-        print(f'{Fore.RED}We\'ve got them! Their associated services are as follows:{Style.RESET_ALL}')
-        p.pprint(associated_services)
-
-    if potential_associated_services:
-        print(f'{Fore.YELLOW}Potentially associated services are as follows:{Style.RESET_ALL}')
-        p.pprint(potential_associated_services)
-
-    if not associated_services and not potential_associated_services:
-        print('Nothing detected here.')
-
-
+    return (associated_services, potential_associated_services)
 
 
 
@@ -120,10 +108,80 @@ if keyword_option == 'y' or keyword_option == 'yes':
 
 
     
-
+""" Azure """
 print(f'{Fore.CYAN}Checking for Azure services{Style.RESET_ALL}')
 if keyword:
-    service_scraping("site:core.windows.net " + companyname + " " + keyword)
+    output_azure = service_scraping("site:core.windows.net " + companyname + " " + keyword)
+    associated_azure = output_azure[0]
+    potentential_associated_azure = output_azure[1]
 else:
-    service_scraping("site:core.windows.net " + companyname)
+    output_azure = service_scraping("site:core.windows.net " + companyname)
+    associated_azure = output_azure[0]
+    potentential_associated_azure = output_azure[1]
 
+if associated_azure:
+    print(f'{Fore.RED}We\'ve got them! Their associated services are as follows:{Style.RESET_ALL}')
+    p.pprint(associated_azure)
+if potentential_associated_azure:
+    print(f'{Fore.YELLOW}Potentially associated services are as follows:{Style.RESET_ALL}')
+    p.pprint(potentential_associated_azure)
+if not associated_azure and not potentential_associated_azure:
+    print('Nothing detected here.')
+
+
+""" AWS """
+print(f'{Fore.CYAN}Checking for AWS services{Style.RESET_ALL}')
+if keyword:
+    aws_one = service_scraping("site:http://s3.amazonaws.com/*/ " + companyname + " " + keyword)
+    aws_two = service_scraping("site:http://*.s3.amazonaws.com/ " + companyname + " " + keyword)
+    associated_aws = list(dict.fromkeys(aws_one[0] + aws_two[0]))
+    potentential_associated_aws = list(dict.fromkeys(aws_one[1] + aws_two[1]))
+else:
+    aws_one = service_scraping("site:http://s3.amazonaws.com/*/ " + companyname)
+    aws_two = service_scraping("site:http://*.s3.amazonaws.com " + companyname)
+    associated_aws = list(dict.fromkeys(aws_one[0] + aws_two[0]))
+    potentential_associated_aws = list(dict.fromkeys(aws_one[1] + aws_two[1]))
+
+if associated_aws:
+    print(f'{Fore.RED}We\'ve got them! Their associated services are as follows:{Style.RESET_ALL}')
+    p.pprint(associated_aws)
+if potentential_associated_aws:
+    print(f'{Fore.YELLOW}Potentially associated services are as follows:{Style.RESET_ALL}')
+    p.pprint(potentential_associated_aws)
+if not associated_aws and not potentential_associated_aws:
+    print('Nothing detected here.')
+
+
+""" GCP """
+print(f'{Fore.CYAN}Checking for Google Cloud Platform services{Style.RESET_ALL}')
+if keyword:
+    output_gcp = service_scraping("site:*.storage.googleapis.com " + companyname + " " + keyword)
+    associated_gcp = output_gcp[0]
+    potentential_associated_gcp = output_gcp[1]
+else:
+    output_gcp = service_scraping("site:*.storage.googleapis.com " + companyname)
+    associated_gcp = output_gcp[0]
+    potentential_associated_gcp = output_gcp[1]
+
+if associated_gcp:
+    print(f'{Fore.RED}We\'ve got them! Their associated services are as follows:{Style.RESET_ALL}')
+    p.pprint(associated_gcp)
+if potentential_associated_gcp:
+    print(f'{Fore.YELLOW}Potentially associated services are as follows:{Style.RESET_ALL}')
+    p.pprint(potentential_associated_gcp)
+if not associated_gcp and not potentential_associated_gcp:
+    print('Nothing detected here.')
+
+"""
+output = {**part_one, **part_two}
+for key, value in output.items():
+    if key in part_one and key in part_two:
+        if (key, value) not in output.items():
+            output[key] = [value, part_one[key]]
+for key, value in part_two.items():
+
+p.pprint(output)
+
+output = list(dict.fromkeys(part_one + part_two))
+p.pprint(output)
+"""
