@@ -24,10 +24,12 @@ class Detector:
 
 		self.Azure = False
 		self.AWS = False
+		self.GCP = False
 		self.IP = []
 		self.Office365 = False
 		self.Zoom = False
 		self.Dropbox = False
+		self.Salesforce = False
 
 		self.crypto_cert = None
 		self.cert_issuer = None
@@ -41,34 +43,47 @@ class Detector:
 		self.AWS_use_case = []
 		self.Azure_links = []
 		self.AWS_links = []
+		self.GCP_use_case = []
 
 
 	def checkForCloudService(self, data, use_case):
 
 		AzureKeywords = ['azure', 'Azure', 'core.windows.net', 'azurewebsites.net', '1drv.com', 'onedrive.live', 'azureedge']
 		AWSKeywords = ['awsdns', 's3-website', 'EC2', 'ECS', 'amazonaws'] # don't set 'S3' as casefold!
+		# GCPKeywords = ['cloud-dns-hostmaster.google.com???']
 
 		for item in data:
 			# don't go for 'Microsoft'!
 			if any(azurekeyword.casefold() in str(item).casefold() for azurekeyword in AzureKeywords):
 				self.Azure = True
-				if 'http' in str(item):
-					self.Azure_links.append(str(item))
+				if 'http' in str(item) or '.net' in str(item) or '.com' in str(item):
+					if 'dns' not in str(item):
+						self.Azure_links.append(str(item))
 				self.Azure_use_case.append(use_case)
 
 			# don't go for 'Amazon'!
 			if any(awskeyword.casefold() in str(item).casefold() for awskeyword in AWSKeywords) or 'S3' in str(item):	
 				self.AWS = True
-				if 'http' in str(item):
-					self.AWS_links.append(str(item))
+				if 'http' in str(item) or '.net' in str(item) or '.com' in str(item):
+					if 'dns' not in str(item):
+						self.AWS_links.append(str(item))
 				self.AWS_use_case.append(use_case)
+
 			if "MS=ms".casefold() in str(item).casefold() or "outlook" in str(item):
 				self.Office365 = True
 			if "ZOOM_verify".casefold() in str(item).casefold():
 				self.Zoom = True
 			if "dropbox".casefold() in str(item).casefold():
 				self.Dropbox = True
+			if "salesforce".casefold() in str(item).casefold():
+				self.Salesforce = True
 
+			google = re.compile("ns-cloud-..\.googledomains")
+			if re.search(google, str(item)):
+				self.GCP = True
+				self.GCP_use_case.append('nameserver')
+
+			#print(str(item))
 
 	def getIP(self):
 		for ip in dns.resolver.resolve(self.domain):
@@ -257,18 +272,22 @@ class Detector:
 
 		self.Azure_use_case = list(dict.fromkeys(self.Azure_use_case))
 		self.AWS_use_case = list(dict.fromkeys(self.AWS_use_case))
+		self.GCP_use_case = list(dict.fromkeys(self.GCP_use_case))
 
 		no_output = True
 
 		if self.Azure: logging.info(f'{Fore.RED}Detected:{Style.RESET_ALL} Microsoft Azure: identified via {", ".join(self.Azure_use_case)}'); no_output = False
-		if self.Azure_links: logging.info(f'{Fore.CYAN}Azure links:{Style.RESET_ALL} {", ".join(self.Azure_links)}'); no_output = False
+		if self.Azure_links: logging.info(f'{Fore.CYAN}Found Azure links:{Style.RESET_ALL} {", ".join(self.Azure_links)}'); no_output = False
 
 		if self.AWS: logging.info(f'{Fore.RED}Detected:{Style.RESET_ALL} Amazon Web Services: identified via {", ".join(self.AWS_use_case)}'); no_output = False
-		if self.AWS_links: logging.info(f'{Fore.CYAN}AWS links:{Style.RESET_ALL} {", ".join(self.AWS_links)}'); no_output = False
+		if self.AWS_links: logging.info(f'{Fore.CYAN}Found AWS links:{Style.RESET_ALL} {", ".join(self.AWS_links)}'); no_output = False
 		
+		if self.GCP: logging.info(f'{Fore.RED}Detected:{Style.RESET_ALL} Google Cloud Platform: identified via {", ".join(self.GCP_use_case)}'); no_output = False
+
 		if self.Office365: logging.info(f'{Fore.RED}Detected:{Style.RESET_ALL} Office365'); no_output = False
 		if self.Zoom: logging.info(f'{Fore.RED}Detected:{Style.RESET_ALL} Zoom'); no_output = False
 		if self.Dropbox: logging.info(f'{Fore.RED}Detected:{Style.RESET_ALL} Dropbox'); no_output = False
+		if self.Salesforce: logging.info(f'{Fore.RED}Detected:{Style.RESET_ALL} Salesforce'); no_output = False
 
 		if no_output: logging.info(f'{Fore.YELLOW}Nothing detected{Style.RESET_ALL}')
 
