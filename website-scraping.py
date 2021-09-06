@@ -1,88 +1,44 @@
-import requests
-import urllib
-from urllib.parse import urlparse
-from urllib.parse import urljoin
-import pandas as pd 
-from requests_html import HTML
-from requests_html import HTMLSession
-
 import pprint as p
-import time
-from bs4 import BeautifulSoup
-from bs4.element import Comment
+import scraping
+import requests
+import re
 
 from colorama import Fore
 from colorama import Style
+from urllib.parse import urlparse
+from urllib.parse import urljoin
+from bs4 import BeautifulSoup
+from bs4.element import Comment
 
-import re
 
 
-def get_source(url):
-    """Return the source code for the provided URL. 
+# from https://stackoverflow.com/questions/1936466/beautifulsoup-grab-visible-webpage-text
+def tag_visible(element):
+    if element.parent.name in ['style', 'script', 'head', 'title', 'meta', '[document]']:
+        return False
+    if isinstance(element, Comment):
+        return False
+    return True
 
-       Send header and sleep in order to prevent from a 429 status code.
 
-    Args: 
-        url (string): URL of the page to scrape.
 
-    Returns:
-        response (object): HTTP response object from requests_html. 
+def get_associated_websites(links, companyname, main_domain, keyword):
+    """ Detect whether a website is associated with a company.
+
+    Args:
+        links (list of strings): list of links to be checked. 
+        companyname (string): the name of the company we are looking for.
+        main_domain (string): the website of the company.
+        keyword (string): optional a keyword to specify the search.
+
+    Outprints:
+        associated and potentially associated websites of the company.
+        
     """
-
-    try:
-        session = HTMLSession() #HTMLSession()
-        user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_1) AppleWebKit/602.2.14 (KHTML, like Gecko) Version/10.0.1 Safari/602.2.14'
-        header = {'User-Agent': user_agent, 'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'}
-        response = session.get(url, headers=header)
-        time.sleep(.600)
-        return response
-
-    except requests.exceptions.RequestException as e:
-        print(e)
-
-def scrape(query):
-
-    query = urllib.parse.quote_plus(query)
-    google_response = get_source("https://www.google.de/search?q=" + query)
-    bing_response = get_source("https://www.bing.com/search?q=" + query)
-
-    links_from_google = list(google_response.html.absolute_links)
-    links_from_bing = list(bing_response.html.absolute_links)
-    google_domains = ('https://www.google.', 
-                      'https://google.', 
-                      'https://webcache.googleusercontent.', 
-                      'http://webcache.googleusercontent.', 
-                      'https://policies.google.',
-                      'https://support.google.',
-                      'https://maps.google.',
-                      'https://translate.google.')
-    bing_domains = ('https://www.bing.',
-    				'https://www.bingplaces.',
-    				'https://bingplaces.',
-    				'http://help.bing.',
-    				'http://go.microsoft.',
-    				'https://go.microsoft.',
-                    'http://www.microsofttranslator.')
-
-    for url in links_from_google[:]:
-        if url.startswith(google_domains):
-            links_from_google.remove(url)
-
-    for url in links_from_bing[:]:
-    	if url.startswith(bing_domains):
-    		links_from_bing.remove(url)
-
-    #p.pprint(links_from_google)
-    #p.pprint(links_from_bing)
-
-    get_associated_websites(list(dict.fromkeys(links_from_google + links_from_bing)))
-
-
-def get_associated_websites(links):
     associated_websites = []
     potential_associated_websites = []
     company_information_fields = ['privacy', 'policy', 'contact', 'copyright', 'imprint',  
-                                  'terms', 'conditions', 'support']
+                                    'terms', 'conditions', 'support']
 
     for link in links:
         if link.endswith('.pdf'):
@@ -173,26 +129,14 @@ def get_associated_websites(links):
         print('Nothing detected here.')
 
 
-# from https://stackoverflow.com/questions/1936466/beautifulsoup-grab-visible-webpage-text
-def tag_visible(element):
-    if element.parent.name in ['style', 'script', 'head', 'title', 'meta', '[document]']:
-        return False
-    if isinstance(element, Comment):
-        return False
-    return True
-
 """
 In case of 429, try:
 https://findwork.dev/blog/advanced-usage-python-requests-timeouts-retries-hooks/
 Category: Retry on failure
 """
 
-global companyname
 companyname = input('Provide the companyname: ')
-global main_domain
 main_domain = input('Provide the company\'s classic domain: ')
-
-global keyword
 keyword = None
 keyword_option = input('Do you want to use an additional keyword? [y/n]: ')
 if keyword_option == 'y' or keyword_option == 'yes':
@@ -201,12 +145,12 @@ if keyword_option == 'y' or keyword_option == 'yes':
 
 print(f'{Fore.CYAN}Checking Amazon websites{Style.RESET_ALL}')
 if keyword:
-    scrape("site:s3.amazonaws.com -filetype:pdf " + companyname + " " + keyword)
+    get_associated_websites(scraping.scraping("site:s3.amazonaws.com -filetype:pdf " + companyname + " " + keyword), companyname, main_domain, keyword)
 else:
-    scrape("site:s3.amazonaws.com -filetype:pdf " + companyname)
+    get_associated_websites(scraping.scraping("site:s3.amazonaws.com -filetype:pdf " + companyname), companyname, main_domain, keyword)
 
 print(f'{Fore.CYAN}Checking Azure websites{Style.RESET_ALL}')
 if keyword:
-    scrape("site:azurewebsites.net -filetype:pdf " + companyname + " " + keyword)
+    get_associated_websites(scraping.scraping("site:azurewebsites.net -filetype:pdf " + companyname + " " + keyword), companyname, main_domain, keyword)
 else:
-    scrape("site:azurewebsites.net -filetype:pdf " + companyname)
+    get_associated_websites(scraping.scraping("site:azurewebsites.net -filetype:pdf " + companyname), companyname, main_domain, keyword)

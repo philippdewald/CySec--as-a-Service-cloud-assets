@@ -30,9 +30,14 @@ class Detector:
 		self.Zoom = False
 		self.Dropbox = False
 		self.Salesforce = False
+		self.Webex = False
+		self.Teamviewer = False
+		self.Atlassian = False
+		self.Dynamics365 = False
 
 		self.crypto_cert = None
 		self.cert_issuer = None
+		self.bucket_list = None
 
 		self.found_urls = []
 
@@ -62,7 +67,7 @@ class Detector:
 				self.Azure_use_case.append(use_case)
 
 			# don't go for 'Amazon'!
-			if any(awskeyword.casefold() in str(item).casefold() for awskeyword in AWSKeywords) or 'S3' in str(item):	
+			if any(awskeyword.casefold() in str(item).casefold() for awskeyword in AWSKeywords):	# or 'S3' in str(item)
 				self.AWS = True
 				if 'http' in str(item) or '.net' in str(item) or '.com' in str(item):
 					if 'dns' not in str(item):
@@ -77,6 +82,14 @@ class Detector:
 				self.Dropbox = True
 			if "salesforce".casefold() in str(item).casefold():
 				self.Salesforce = True
+			if "webexdomainverification".casefold() in str(item).casefold():
+				self.Webex = True
+			if "teamviewer-sso-verification".casefold() in str(item).casefold():
+				self.TeamViewer = True
+			if "atlassian-domain-verification".casefold() in str(item).casefold():
+				self.Atlassian = True
+			if "d365mktkey".casefold() in str(item).casefold():
+				self.Dynamics365 = True
 
 			google = re.compile("ns-cloud-..\.googledomains")
 			if re.search(google, str(item)):
@@ -237,7 +250,7 @@ class Detector:
 				nslookup = os.popen('nslookup ' + str(self.IP) + ' 8.8.8.8').read()
 
 				region = nslookup.split('s3-website-',1)[1].split('.amazonaws.com',1)[0]
-				bucket_list = os.popen('aws s3 ls s3://' + self.domain + '/ --no-sign-request --region ' + region).read()
+				self.bucket_list = os.popen('aws s3 ls s3://' + self.domain + '/ --no-sign-request --region ' + region).read()
 			except:
 				pass
 
@@ -281,6 +294,7 @@ class Detector:
 
 		if self.AWS: logging.info(f'{Fore.RED}Detected:{Style.RESET_ALL} Amazon Web Services: identified via {", ".join(self.AWS_use_case)}'); no_output = False
 		if self.AWS_links: logging.info(f'{Fore.CYAN}Found AWS links:{Style.RESET_ALL} {", ".join(self.AWS_links)}'); no_output = False
+		if self.bucket_list: logging.info(f'{Fore.CYAN}Found AWS bucket list: \n {Style.RESET_ALL} {"".join(self.bucket_list)}'); no_output = False
 		
 		if self.GCP: logging.info(f'{Fore.RED}Detected:{Style.RESET_ALL} Google Cloud Platform: identified via {", ".join(self.GCP_use_case)}'); no_output = False
 
@@ -288,6 +302,10 @@ class Detector:
 		if self.Zoom: logging.info(f'{Fore.RED}Detected:{Style.RESET_ALL} Zoom'); no_output = False
 		if self.Dropbox: logging.info(f'{Fore.RED}Detected:{Style.RESET_ALL} Dropbox'); no_output = False
 		if self.Salesforce: logging.info(f'{Fore.RED}Detected:{Style.RESET_ALL} Salesforce'); no_output = False
+		if self.Webex: logging.info(f'{Fore.RED}Detected:{Style.RESET_ALL} Webex by Cisco'); no_output = False
+		if self.Teamviewer: logging.info(f'{Fore.RED}Detected:{Style.RESET_ALL} TeamViewer'); no_output = False
+		if self.Atlassian: logging.info(f'{Fore.RED}Detected:{Style.RESET_ALL} Atlassian'); no_output = False
+		if self.Dynamics365: logging.info(f'{Fore.RED}Detected:{Style.RESET_ALL} Microsoft Dynamics365'); no_output = False
 
 		if no_output: logging.info(f'{Fore.YELLOW}Nothing detected{Style.RESET_ALL}')
 
